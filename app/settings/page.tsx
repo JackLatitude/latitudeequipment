@@ -14,7 +14,7 @@ export default async function SettingsPage() {
   return (
     <div className="max-w-lg">
       <h1 className="text-xl font-semibold text-brand-black mb-8">Settings</h1>
-      <SettingsForm profile={profile} />
+      <SettingsForm profile={profile} email={user.email ?? ''} />
     </div>
   )
 }

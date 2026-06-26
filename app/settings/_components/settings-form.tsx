@@ -5,12 +5,12 @@ import { Field } from '@/components/ui/field'
 import { createClient } from '@/lib/supabase/client'
 import type { Profile } from '@/lib/types'
 
-type Props = { profile: Profile }
+type Props = { profile: Profile; email: string }
 
 const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-black'
 const btnClass = 'bg-brand-black text-brand-white text-sm font-medium px-4 py-2 rounded hover:opacity-80 disabled:opacity-50'
 
-export function SettingsForm({ profile }: Props) {
+export function SettingsForm({ profile, email }: Props) {
   const [displayName, setDisplayName] = useState(profile.display_name)
   const [inviteEmail, setInviteEmail] = useState('')
   const [currentPassword, setCurrentPassword] = useState('')
@@ -68,6 +68,19 @@ export function SettingsForm({ profile }: Props) {
 
     try {
       const client = createClient()
+
+      // Verify current password before allowing update
+      const { error: signInError } = await client.auth.signInWithPassword({
+        email,
+        password: currentPassword,
+      })
+
+      if (signInError) {
+        setPasswordMsg('Current password is incorrect.')
+        setChangingPassword(false)
+        return
+      }
+
       const { error } = await client.auth.updateUser({ password: newPassword })
 
       if (error) {
