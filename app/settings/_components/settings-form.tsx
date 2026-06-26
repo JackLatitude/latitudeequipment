@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { Field } from '@/components/ui/field'
+import { createClient } from '@/lib/supabase/client'
 import type { Profile } from '@/lib/types'
 
 type Props = { profile: Profile }
@@ -12,10 +13,15 @@ const btnClass = 'bg-brand-black text-brand-white text-sm font-medium px-4 py-2 
 export function SettingsForm({ profile }: Props) {
   const [displayName, setDisplayName] = useState(profile.display_name)
   const [inviteEmail, setInviteEmail] = useState('')
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
   const [savingName, setSavingName] = useState(false)
   const [inviting, setInviting] = useState(false)
+  const [changingPassword, setChangingPassword] = useState(false)
   const [nameMsg, setNameMsg] = useState<string | null>(null)
   const [inviteMsg, setInviteMsg] = useState<string | null>(null)
+  const [passwordMsg, setPasswordMsg] = useState<string | null>(null)
 
   async function handleSaveName(e: React.FormEvent) {
     e.preventDefault()
@@ -47,6 +53,36 @@ export function SettingsForm({ profile }: Props) {
       setInviteMsg(message)
     }
     setInviting(false)
+  }
+
+  async function handleChangePassword(e: React.FormEvent) {
+    e.preventDefault()
+
+    if (newPassword !== confirmPassword) {
+      setPasswordMsg('Passwords do not match.')
+      return
+    }
+
+    setChangingPassword(true)
+    setPasswordMsg(null)
+
+    try {
+      const client = createClient()
+      const { error } = await client.auth.updateUser({ password: newPassword })
+
+      if (error) {
+        setPasswordMsg(error.message)
+      } else {
+        setPasswordMsg('Password updated.')
+        setCurrentPassword('')
+        setNewPassword('')
+        setConfirmPassword('')
+      }
+    } catch (err) {
+      setPasswordMsg('Something went wrong.')
+    }
+
+    setChangingPassword(false)
   }
 
   return (
@@ -96,6 +132,47 @@ export function SettingsForm({ profile }: Props) {
           </form>
         </section>
       )}
+
+      <section>
+        <h2 className="text-base font-medium text-brand-black mb-4">Change password</h2>
+        <form onSubmit={handleChangePassword} className="space-y-4">
+          <Field label="Current password">
+            <input
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              required
+              className={inputClass}
+            />
+          </Field>
+          <Field label="New password">
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+              className={inputClass}
+            />
+          </Field>
+          <Field label="Confirm password">
+            <input
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+              className={inputClass}
+            />
+          </Field>
+          {passwordMsg && <p className="text-sm text-brand-mid-grey">{passwordMsg}</p>}
+          <button
+            type="submit"
+            disabled={changingPassword}
+            className={btnClass}
+          >
+            {changingPassword ? 'Updating…' : 'Change password'}
+          </button>
+        </form>
+      </section>
     </div>
   )
 }
