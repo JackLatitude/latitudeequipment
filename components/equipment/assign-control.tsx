@@ -27,7 +27,7 @@ export function AssignControl({ itemId, currentHolderId, kitId, profiles, curren
         disabled={loading}
         value={currentHolderId ?? ''}
         onChange={(e) => handleAssign(e.target.value || null)}
-        className="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900 disabled:opacity-50"
+        className="border border-brand-rule-grey rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-black disabled:opacity-50"
       >
         {!kitId && <option value="">Unassigned (in storage)</option>}
         {profiles.map((p) => (
@@ -38,7 +38,7 @@ export function AssignControl({ itemId, currentHolderId, kitId, profiles, curren
         <button
           disabled={loading}
           onClick={() => handleAssign(currentUserId)}
-          className="bg-gray-900 text-white text-sm font-medium px-3 py-2 rounded hover:bg-gray-700 disabled:opacity-50"
+          className="bg-brand-black text-white text-sm font-medium px-3 py-2 rounded hover:opacity-80 disabled:opacity-50"
         >
           Take it
         </button>
