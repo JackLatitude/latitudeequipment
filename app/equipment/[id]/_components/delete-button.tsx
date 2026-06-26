@@ -19,7 +19,7 @@ export function DeleteItemButton({ itemId, onDelete }: Props) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="text-sm text-red-600 hover:text-red-800"
+        className="text-sm text-brand-red hover:opacity-80"
       >
         Delete item
       </button>

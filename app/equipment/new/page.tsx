@@ -31,14 +31,14 @@ export default function NewItemPage() {
     }
   }
 
-  const inputClass = 'w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-gray-900'
+  const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-red'
 
   return (
     <div className="max-w-lg">
       <div className="mb-6">
-        <Link href="/equipment" className="text-sm text-gray-500 hover:text-gray-900">← Equipment</Link>
+        <Link href="/equipment" className="text-sm text-brand-mid-grey hover:text-brand-black">← Equipment</Link>
       </div>
-      <h1 className="text-xl font-semibold text-gray-900 mb-6">Add item</h1>
+      <h1 className="text-xl font-semibold text-brand-black mb-6">Add item</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Field label="Name" required>
           <input name="name" required className={inputClass} />
@@ -61,16 +61,16 @@ export default function NewItemPage() {
         <Field label="Notes">
           <textarea name="notes" rows={3} className={inputClass} />
         </Field>
-        {error && <p className="text-sm text-red-600">{error}</p>}
+        {error && <p className="text-sm text-brand-red">{error}</p>}
         <div className="flex gap-3 pt-2">
           <button
             type="submit"
             disabled={loading}
-            className="bg-gray-900 text-white text-sm font-medium px-4 py-2 rounded hover:bg-gray-700 disabled:opacity-50"
+            className="bg-brand-black text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90 disabled:opacity-50"
           >
             {loading ? 'Saving…' : 'Add item'}
           </button>
-          <Link href="/equipment" className="text-sm font-medium text-gray-500 px-4 py-2 hover:text-gray-900">
+          <Link href="/equipment" className="text-sm font-medium text-brand-mid-grey px-4 py-2 hover:text-brand-black">
             Cancel
           </Link>
         </div>

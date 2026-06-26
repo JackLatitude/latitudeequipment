@@ -41,16 +41,16 @@ export default async function ItemDetailPage({ params }: Props) {
   return (
     <div className="max-w-2xl">
       <div className="mb-6">
-        <Link href="/equipment" className="text-sm text-gray-500 hover:text-gray-900">
+        <Link href="/equipment" className="text-sm text-brand-mid-grey hover:text-brand-black">
           ← Equipment
         </Link>
       </div>
 
       <div className="flex items-start justify-between mb-6">
-        <h1 className="text-xl font-semibold text-gray-900">{item.name}</h1>
+        <h1 className="text-xl font-semibold text-brand-black">{item.name}</h1>
         <Link
           href={`/equipment/${item.id}/edit`}
-          className="text-sm text-gray-500 hover:text-gray-900 border border-gray-300 rounded px-3 py-1.5"
+          className="text-sm text-brand-mid-grey hover:text-brand-black border border-brand-rule-grey rounded px-3 py-1.5"
         >
           Edit
         </Link>
@@ -66,14 +66,14 @@ export default async function ItemDetailPage({ params }: Props) {
           ['Weight', item.weight_kg != null ? `${item.weight_kg} kg` : '—'],
         ].map(([label, value]) => (
           <div key={label}>
-            <dt className="text-gray-500">{label}</dt>
-            <dd className="font-medium text-gray-900">{value}</dd>
+            <dt className="text-brand-mid-grey">{label}</dt>
+            <dd className="font-medium text-brand-black">{value}</dd>
           </div>
         ))}
       </dl>
 
       <div className="mb-8">
-        <h2 className="text-sm font-medium text-gray-900 mb-2">Current holder</h2>
+        <h2 className="text-sm font-medium text-brand-black mb-2">Current holder</h2>
         <AssignControl
           itemId={item.id}
           currentHolderId={item.current_holder_id}
@@ -86,24 +86,24 @@ export default async function ItemDetailPage({ params }: Props) {
 
       {item.notes && (
         <div className="mb-8">
-          <h2 className="text-sm font-medium text-gray-900 mb-1">Notes</h2>
-          <p className="text-sm text-gray-600">{item.notes}</p>
+          <h2 className="text-sm font-medium text-brand-black mb-1">Notes</h2>
+          <p className="text-sm text-brand-mid-grey">{item.notes}</p>
         </div>
       )}
 
       <div>
-        <h2 className="text-sm font-medium text-gray-900 mb-3">Assignment history</h2>
+        <h2 className="text-sm font-medium text-brand-black mb-3">Assignment history</h2>
         {history.length === 0 ? (
-          <p className="text-sm text-gray-500">No history yet.</p>
+          <p className="text-sm text-brand-mid-grey">No history yet.</p>
         ) : (
           <ul className="space-y-2">
             {history.map((h) => (
-              <li key={h.id} className="text-sm text-gray-600">
-                <span className="font-medium text-gray-900">
+              <li key={h.id} className="text-sm text-brand-mid-grey">
+                <span className="font-medium text-brand-black">
                   {h.assigned_to?.display_name ?? 'Unassigned'}
                 </span>
                 {' '}— assigned by {h.assigned_by?.display_name}{' '}
-                <span className="text-gray-400">
+                <span className="text-brand-rule-grey">
                   {new Date(h.assigned_at).toLocaleDateString('en-GB', {
                     day: 'numeric', month: 'short', year: 'numeric',
                   })}
@@ -114,7 +114,7 @@ export default async function ItemDetailPage({ params }: Props) {
         )}
       </div>
 
-      <div className="mt-8 pt-6 border-t border-gray-200">
+      <div className="mt-8 pt-6 border-t border-brand-rule-grey">
         <DeleteItemButton itemId={item.id} onDelete={handleDelete} />
       </div>
     </div>
