@@ -1,11 +1,12 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
-import { getItem } from '@/lib/db/items'
+import { getItem, deleteItem } from '@/lib/db/items'
 import { getProfiles } from '@/lib/db/users'
 import { getItemHistory, assignItem } from '@/lib/db/assignments'
 import { createClient } from '@/lib/supabase/server'
 import { AssignControl } from '@/components/equipment/assign-control'
 import { revalidatePath } from 'next/cache'
+import { DeleteItemButton } from './_components/delete-button'
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -29,6 +30,12 @@ export default async function ItemDetailPage({ params }: Props) {
     await assignItem(itemId, assignedToId, user!.id)
     revalidatePath(`/equipment/${itemId}`)
     revalidatePath('/equipment')
+  }
+
+  async function handleDelete(itemId: string) {
+    'use server'
+    await deleteItem(itemId)
+    redirect('/equipment')
   }
 
   return (
@@ -105,6 +112,10 @@ export default async function ItemDetailPage({ params }: Props) {
             ))}
           </ul>
         )}
+      </div>
+
+      <div className="mt-8 pt-6 border-t border-gray-200">
+        <DeleteItemButton itemId={item.id} onDelete={handleDelete} />
       </div>
     </div>
   )
