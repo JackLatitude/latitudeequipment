@@ -8,6 +8,7 @@ import { assignKit, assignItem } from '@/lib/db/assignments'
 import { createClient } from '@/lib/supabase/server'
 import { KitAssignControl } from '@/components/kits/kit-assign-control'
 import { AssignControl } from '@/components/equipment/assign-control'
+import { KitActions } from './_components/kit-actions'
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -118,6 +119,8 @@ export default async function KitDetailPage({ params }: Props) {
           </table>
         )}
       </div>
+
+      <KitActions kitId={kit.id} />
     </div>
   )
 }
