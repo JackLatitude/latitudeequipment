@@ -33,9 +33,9 @@ export function CarnetSelector({ items, kits }: Props) {
   }
 
   function toggleGroup(ids: string[]) {
-    const allSelected = ids.every((id) => selected.has(id))
     setSelected((prev) => {
       const next = new Set(prev)
+      const allSelected = ids.every((id) => prev.has(id))
       if (allSelected) ids.forEach((id) => next.delete(id))
       else ids.forEach((id) => next.add(id))
       return next
@@ -62,7 +62,6 @@ export function CarnetSelector({ items, kits }: Props) {
       a.href = url
       a.download = 'carnet-export.xlsx'
       a.click()
-      URL.revokeObjectURL(url)
     } finally {
       setExporting(false)
     }
