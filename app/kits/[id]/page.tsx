@@ -2,13 +2,14 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { revalidatePath } from 'next/cache'
 import { getKit } from '@/lib/db/kits'
-import { getItems } from '@/lib/db/items'
+import { getItems, getLooseItems } from '@/lib/db/items'
 import { getProfiles } from '@/lib/db/users'
 import { assignKit, assignItem } from '@/lib/db/assignments'
 import { createClient } from '@/lib/supabase/server'
 import { KitAssignControl } from '@/components/kits/kit-assign-control'
 import { AssignControl } from '@/components/equipment/assign-control'
 import { KitActions } from './_components/kit-actions'
+import { AddItemControl } from './_components/add-item-control'
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -19,10 +20,11 @@ export default async function KitDetailPage({ params }: Props) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return notFound()
 
-  const [kit, allItems, profiles] = await Promise.all([
+  const [kit, allItems, profiles, looseItems] = await Promise.all([
     getKit(id),
     getItems(),
     getProfiles(),
+    getLooseItems(),
   ])
 
   if (!kit) return notFound()
@@ -39,6 +41,17 @@ export default async function KitDetailPage({ params }: Props) {
   async function handleAssignItem(itemId: string, assignedToId: string | null) {
     'use server'
     await assignItem(itemId, assignedToId, user!.id)
+    revalidatePath(`/kits/${id}`)
+    revalidatePath('/equipment')
+  }
+
+  async function handleAddItem(itemId: string) {
+    'use server'
+    await assignItem(itemId, kit!.current_holder_id, user!.id, `Added to kit: ${kit!.name}`)
+    // Update kit_id on the item via direct DB update
+    const { createClient: makeClient } = await import('@/lib/supabase/server')
+    const db = await makeClient()
+    await db.from('items').update({ kit_id: kit!.id }).eq('id', itemId)
     revalidatePath(`/kits/${id}`)
     revalidatePath('/equipment')
   }
@@ -83,6 +96,14 @@ export default async function KitDetailPage({ params }: Props) {
         <h2 className="text-sm font-medium text-white mb-3">
           Items ({kitItems.length})
         </h2>
+
+        {looseItems.length > 0 && (
+          <div className="mb-4">
+            <p className="text-xs text-brand-mid-grey mb-2">Add a loose item to this kit:</p>
+            <AddItemControl kitId={kit.id} looseItems={looseItems} onAdd={handleAddItem} />
+          </div>
+        )}
+
         {kitItems.length === 0 ? (
           <p className="text-sm text-brand-mid-grey">No items in this kit.</p>
         ) : (
@@ -120,7 +141,9 @@ export default async function KitDetailPage({ params }: Props) {
         )}
       </div>
 
-      <KitActions kitId={kit.id} />
+      <div className="mt-8">
+        <KitActions kitId={kit.id} />
+      </div>
     </div>
   )
 }
