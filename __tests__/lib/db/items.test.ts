@@ -45,3 +45,24 @@ describe('deleteItem', () => {
     )
   })
 })
+
+describe('getLooseItems', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockFrom.mockImplementation(() => ({ select: mockSelect }))
+  })
+
+  it('returns only items with null kit_id', async () => {
+    const fakeItems = [{ id: '1', name: 'Drone', kit_id: null, deleted_at: null }]
+    mockSelect.mockReturnValue({
+      is: jest.fn().mockReturnValue({
+        is: jest.fn().mockReturnValue({
+          order: jest.fn().mockResolvedValue({ data: fakeItems, error: null }),
+        }),
+      }),
+    })
+    const { getLooseItems } = await import('@/lib/db/items')
+    const result = await getLooseItems()
+    expect(result).toEqual(fakeItems)
+  })
+})

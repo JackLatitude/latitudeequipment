@@ -36,6 +36,18 @@ export async function getItem(id: string): Promise<Item | null> {
   return data as Item
 }
 
+export async function getLooseItems(): Promise<Item[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('items')
+    .select('*, current_holder:profiles(*), kit:kits(*)')
+    .is('deleted_at', null)
+    .is('kit_id', null)
+    .order('name')
+  if (error) throw new Error(error.message)
+  return data as Item[]
+}
+
 export async function createItem(data: CreateItemData): Promise<Item> {
   const supabase = await createClient()
   const { data: item, error } = await supabase
