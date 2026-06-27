@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { updateItem } from '@/lib/db/items'
+import { updateItem, getItem } from '@/lib/db/items'
 import { getKit } from '@/lib/db/kits'
 import { assignItem } from '@/lib/db/assignments'
 import { NextResponse } from 'next/server'
@@ -26,11 +26,9 @@ export async function PATCH(
         await assignItem(id, kit.current_holder_id, user.id, `Added to kit: ${kit.name}`)
       } else {
         // Removing from kit — just clear kit_id, leave holder unchanged
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        await updateItem(id, { kit_id: null } as any)
+        await updateItem(id, { kit_id: null })
       }
       // Re-fetch and return updated item
-      const { getItem } = await import('@/lib/db/items')
       const updated = await getItem(id)
       return NextResponse.json(updated)
     }

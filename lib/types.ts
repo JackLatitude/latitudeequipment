@@ -52,7 +52,7 @@ export type CreateItemData = {
   serial_number?: string
   category?: string
   notes?: string
-  kit_id?: string
+  kit_id?: string | null
   current_holder_id?: string
   value?: number
   country_of_origin?: string
