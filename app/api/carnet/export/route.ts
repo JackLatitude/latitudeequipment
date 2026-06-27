@@ -1,0 +1,45 @@
+import { createClient } from '@/lib/supabase/server'
+import { getItemsByIds } from '@/lib/db/items'
+import { NextResponse } from 'next/server'
+import * as XLSX from 'xlsx'
+
+export async function POST(request: Request) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+
+  const body = await request.json()
+  const itemIds: string[] = body.itemIds ?? []
+
+  if (itemIds.length === 0) {
+    return NextResponse.json({ message: 'No items selected' }, { status: 400 })
+  }
+
+  try {
+    const items = await getItemsByIds(itemIds)
+
+    const rows = items.map((item) => ({
+      'Name': item.name,
+      'Serial Number': item.serial_number ?? '',
+      'Value (£)': item.value ?? '',
+      'Country of Origin': item.country_of_origin ?? '',
+      'Weight (kg)': item.weight_kg ?? '',
+    }))
+
+    const ws = XLSX.utils.json_to_sheet(rows)
+    const wb = XLSX.utils.book_new()
+    XLSX.utils.book_append_sheet(wb, ws, 'Carnet')
+
+    const buffer = XLSX.write(wb, { type: 'buffer', bookType: 'xlsx' })
+
+    return new Response(buffer, {
+      headers: {
+        'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'Content-Disposition': 'attachment; filename="carnet-export.xlsx"',
+      },
+    })
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : 'Unknown error'
+    return NextResponse.json({ message }, { status: 500 })
+  }
+}

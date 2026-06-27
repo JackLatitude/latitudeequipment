@@ -71,6 +71,19 @@ export async function updateItem(id: string, data: Partial<CreateItemData>): Pro
   return item as Item
 }
 
+export async function getItemsByIds(ids: string[]): Promise<Item[]> {
+  if (ids.length === 0) return []
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('items')
+    .select('*, current_holder:profiles(*), kit:kits(*)')
+    .in('id', ids)
+    .is('deleted_at', null)
+    .order('name')
+  if (error) throw new Error(error.message)
+  return data as Item[]
+}
+
 export async function deleteItem(id: string): Promise<void> {
   const supabase = await createClient()
   const { error } = await supabase

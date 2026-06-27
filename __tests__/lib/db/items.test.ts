@@ -66,3 +66,30 @@ describe('getLooseItems', () => {
     expect(result).toEqual(fakeItems)
   })
 })
+
+describe('getItemsByIds', () => {
+  beforeEach(() => {
+    jest.clearAllMocks()
+    mockFrom.mockImplementation(() => ({ select: mockSelect }))
+  })
+
+  it('returns items matching the given ids', async () => {
+    const fakeItems = [{ id: 'abc', name: 'Drone', deleted_at: null }]
+    mockSelect.mockReturnValue({
+      in: jest.fn().mockReturnValue({
+        is: jest.fn().mockReturnValue({
+          order: jest.fn().mockResolvedValue({ data: fakeItems, error: null }),
+        }),
+      }),
+    })
+    const { getItemsByIds } = await import('@/lib/db/items')
+    const result = await getItemsByIds(['abc'])
+    expect(result).toEqual(fakeItems)
+  })
+
+  it('returns empty array for empty ids input', async () => {
+    const { getItemsByIds } = await import('@/lib/db/items')
+    const result = await getItemsByIds([])
+    expect(result).toEqual([])
+  })
+})
