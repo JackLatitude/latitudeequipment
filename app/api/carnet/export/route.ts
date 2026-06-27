@@ -8,14 +8,19 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
 
-  const body = await request.json()
-  const itemIds: string[] = body.itemIds ?? []
-
-  if (itemIds.length === 0) {
-    return NextResponse.json({ message: 'No items selected' }, { status: 400 })
-  }
-
   try {
+    const body = await request.json()
+
+    if (!Array.isArray(body.itemIds)) {
+      return NextResponse.json({ message: 'itemIds must be an array' }, { status: 400 })
+    }
+
+    const itemIds: string[] = body.itemIds
+
+    if (itemIds.length === 0) {
+      return NextResponse.json({ message: 'No items selected' }, { status: 400 })
+    }
+
     const items = await getItemsByIds(itemIds)
 
     const rows = items.map((item) => ({
