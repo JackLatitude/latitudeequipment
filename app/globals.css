@@ -33,8 +33,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #0a0a0a;
+  --foreground: #ffffff;
 }
 
 @theme inline {
@@ -45,15 +45,10 @@
   --color-brand-white: #FFFFFF;
   --color-brand-light-grey: #F2F2F2;
   --color-brand-mid-grey: #888888;
-  --color-brand-rule-grey: #DDDDDD;
+  --color-brand-rule-grey: #333333;
+  --color-brand-dark-surface: #1a1a1a;
+  --color-brand-input: #111111;
   --font-sans: 'Metropolis', system-ui, sans-serif;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
