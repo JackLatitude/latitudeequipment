@@ -23,7 +23,12 @@ export async function POST(request: Request) {
 
     const items = await getItemsByIds(itemIds)
 
+    // Preserve the kit-grouped order the client sent
+    const idOrder = new Map(itemIds.map((id, i) => [id, i]))
+    items.sort((a, b) => (idOrder.get(a.id) ?? 0) - (idOrder.get(b.id) ?? 0))
+
     const rows = items.map((item) => ({
+      'Kit': item.kit?.name ?? 'Loose item',
       'Name': item.name,
       'Serial Number': item.serial_number ?? '',
       'Value (£)': item.value ?? '',
