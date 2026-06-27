@@ -21,8 +21,8 @@ export function EditItemForm({ item, kits }: Props) {
     const raw = Object.fromEntries(new FormData(form))
 
     // kit_id is handled separately because it triggers holder sync
-    const kitId = raw.kit_id as string | undefined
-    const hasKitChange = kitId !== undefined && kitId !== (item.kit_id ?? '')
+    const kitId = raw.kit_id as string
+    const hasKitChange = kitId !== (item.kit_id ?? '')
 
     if (hasKitChange) {
       const kitRes = await fetch(`/api/items/${item.id}`, {

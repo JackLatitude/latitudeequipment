@@ -51,7 +51,8 @@ export default async function KitDetailPage({ params }: Props) {
     // Update kit_id on the item via direct DB update
     const { createClient: makeClient } = await import('@/lib/supabase/server')
     const db = await makeClient()
-    await db.from('items').update({ kit_id: kit!.id }).eq('id', itemId)
+    const { error } = await db.from('items').update({ kit_id: kit!.id }).eq('id', itemId)
+    if (error) throw new Error(error.message)
     revalidatePath(`/kits/${id}`)
     revalidatePath('/equipment')
   }
