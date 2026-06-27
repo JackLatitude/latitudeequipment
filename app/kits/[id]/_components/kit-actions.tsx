@@ -30,7 +30,7 @@ export function KitActions({ kitId }: Props) {
         <button
           onClick={handleDuplicate}
           disabled={loading}
-          className="text-sm font-medium text-brand-black border border-brand-rule-grey rounded px-4 py-2 hover:bg-brand-light-grey disabled:opacity-50"
+          className="text-sm font-medium text-white border border-brand-rule-grey rounded px-4 py-2 hover:bg-brand-dark-surface disabled:opacity-50"
         >
           Duplicate kit
         </button>

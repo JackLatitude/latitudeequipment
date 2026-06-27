@@ -12,31 +12,44 @@ type Props = {
 }
 
 export function KitAssignControl({ kitId, currentHolderId, profiles, currentUserId, onAssign }: Props) {
+  const [selected, setSelected] = useState(currentHolderId)
   const [loading, setLoading] = useState(false)
 
-  async function handleAssign(assignedToId: string) {
+  async function handleAssign() {
     setLoading(true)
-    await onAssign(kitId, assignedToId)
-    setLoading(false)
+    try {
+      await onAssign(kitId, selected)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2">
       <select
+        value={selected}
+        onChange={(e) => setSelected(e.target.value)}
         disabled={loading}
-        value={currentHolderId}
-        onChange={(e) => handleAssign(e.target.value)}
-        className="border border-brand-rule-grey rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-black disabled:opacity-50"
+        className="border border-brand-rule-grey rounded px-2 py-1 text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red"
       >
         {profiles.map((p) => (
           <option key={p.id} value={p.id}>{p.display_name}</option>
         ))}
       </select>
+      {selected !== currentHolderId && (
+        <button
+          onClick={handleAssign}
+          disabled={loading}
+          className="text-sm font-medium bg-brand-black text-white px-3 py-2 rounded hover:opacity-80 disabled:opacity-50 border border-brand-rule-grey"
+        >
+          {loading ? '…' : 'Assign'}
+        </button>
+      )}
       {currentHolderId !== currentUserId && (
         <button
+          onClick={() => setSelected(currentUserId)}
           disabled={loading}
-          onClick={() => handleAssign(currentUserId)}
-          className="bg-brand-black text-brand-white text-sm font-medium px-3 py-2 rounded hover:opacity-80 disabled:opacity-50"
+          className="text-sm text-brand-mid-grey hover:text-white"
         >
           Take it
         </button>

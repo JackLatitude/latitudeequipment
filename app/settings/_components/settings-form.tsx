@@ -7,7 +7,7 @@ import type { Profile } from '@/lib/types'
 
 type Props = { profile: Profile; email: string }
 
-const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-black'
+const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2 text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
 const btnClass = 'bg-brand-black text-brand-white text-sm font-medium px-4 py-2 rounded hover:opacity-80 disabled:opacity-50'
 
 export function SettingsForm({ profile, email }: Props) {
@@ -101,7 +101,7 @@ export function SettingsForm({ profile, email }: Props) {
   return (
     <div className="space-y-10">
       <section>
-        <h2 className="text-base font-medium text-brand-black mb-4">Your profile</h2>
+        <h2 className="text-base font-medium text-white mb-4">Your profile</h2>
         <form onSubmit={handleSaveName} className="space-y-4">
           <Field label="Display name">
             <input
@@ -123,7 +123,7 @@ export function SettingsForm({ profile, email }: Props) {
 
       {profile.is_admin && (
         <section>
-          <h2 className="text-base font-medium text-brand-black mb-4">Invite a partner</h2>
+          <h2 className="text-base font-medium text-white mb-4">Invite a partner</h2>
           <form onSubmit={handleInvite} className="space-y-4">
             <Field label="Email address">
               <input
@@ -147,7 +147,7 @@ export function SettingsForm({ profile, email }: Props) {
       )}
 
       <section>
-        <h2 className="text-base font-medium text-brand-black mb-4">Change password</h2>
+        <h2 className="text-base font-medium text-white mb-4">Change password</h2>
         <form onSubmit={handleChangePassword} className="space-y-4">
           <Field label="Current password">
             <input

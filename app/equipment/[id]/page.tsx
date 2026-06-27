@@ -41,16 +41,16 @@ export default async function ItemDetailPage({ params }: Props) {
   return (
     <div className="max-w-2xl">
       <div className="mb-6">
-        <Link href="/equipment" className="text-sm text-brand-mid-grey hover:text-brand-black">
+        <Link href="/equipment" className="text-sm text-brand-mid-grey hover:text-white">
           ← Equipment
         </Link>
       </div>
 
       <div className="flex items-start justify-between mb-6">
-        <h1 className="text-xl font-semibold text-brand-black">{item.name}</h1>
+        <h1 className="text-xl font-semibold text-white">{item.name}</h1>
         <Link
           href={`/equipment/${item.id}/edit`}
-          className="text-sm text-brand-mid-grey hover:text-brand-black border border-brand-rule-grey rounded px-3 py-1.5"
+          className="text-sm text-brand-mid-grey hover:text-white border border-brand-rule-grey rounded px-3 py-1.5"
         >
           Edit
         </Link>
@@ -67,13 +67,13 @@ export default async function ItemDetailPage({ params }: Props) {
         ].map(([label, value]) => (
           <div key={label}>
             <dt className="text-brand-mid-grey">{label}</dt>
-            <dd className="font-medium text-brand-black">{value}</dd>
+            <dd className="font-medium text-white">{value}</dd>
           </div>
         ))}
       </dl>
 
       <div className="mb-8">
-        <h2 className="text-sm font-medium text-brand-black mb-2">Current holder</h2>
+        <h2 className="text-sm font-medium text-white mb-2">Current holder</h2>
         <AssignControl
           itemId={item.id}
           currentHolderId={item.current_holder_id}
@@ -86,20 +86,20 @@ export default async function ItemDetailPage({ params }: Props) {
 
       {item.notes && (
         <div className="mb-8">
-          <h2 className="text-sm font-medium text-brand-black mb-1">Notes</h2>
+          <h2 className="text-sm font-medium text-white mb-1">Notes</h2>
           <p className="text-sm text-brand-mid-grey">{item.notes}</p>
         </div>
       )}
 
       <div>
-        <h2 className="text-sm font-medium text-brand-black mb-3">Assignment history</h2>
+        <h2 className="text-sm font-medium text-white mb-3">Assignment history</h2>
         {history.length === 0 ? (
           <p className="text-sm text-brand-mid-grey">No history yet.</p>
         ) : (
           <ul className="space-y-2">
             {history.map((h) => (
               <li key={h.id} className="text-sm text-brand-mid-grey">
-                <span className="font-medium text-brand-black">
+                <span className="font-medium text-white">
                   {h.assigned_to?.display_name ?? 'Unassigned'}
                 </span>
                 {' '}— assigned by {h.assigned_by?.display_name}{' '}

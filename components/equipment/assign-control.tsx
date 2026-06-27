@@ -13,32 +13,45 @@ type Props = {
 }
 
 export function AssignControl({ itemId, currentHolderId, kitId, profiles, currentUserId, onAssign }: Props) {
+  const [selected, setSelected] = useState(currentHolderId ?? '')
   const [loading, setLoading] = useState(false)
 
-  async function handleAssign(assignedToId: string | null) {
+  async function handleAssign() {
     setLoading(true)
-    await onAssign(itemId, assignedToId)
-    setLoading(false)
+    try {
+      await onAssign(itemId, selected || null)
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-2">
       <select
+        value={selected}
+        onChange={(e) => setSelected(e.target.value)}
         disabled={loading}
-        value={currentHolderId ?? ''}
-        onChange={(e) => handleAssign(e.target.value || null)}
-        className="border border-brand-rule-grey rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-black disabled:opacity-50"
+        className="border border-brand-rule-grey rounded px-2 py-1 text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red"
       >
-        {!kitId && <option value="">Unassigned (in storage)</option>}
+        {kitId === null && <option value="">Unassigned</option>}
         {profiles.map((p) => (
           <option key={p.id} value={p.id}>{p.display_name}</option>
         ))}
       </select>
+      {selected !== (currentHolderId ?? '') && (
+        <button
+          onClick={handleAssign}
+          disabled={loading}
+          className="text-xs bg-brand-black text-white px-2 py-1 rounded hover:opacity-80 disabled:opacity-50 border border-brand-rule-grey"
+        >
+          {loading ? '…' : 'Save'}
+        </button>
+      )}
       {currentHolderId !== currentUserId && (
         <button
+          onClick={() => { setSelected(currentUserId); }}
           disabled={loading}
-          onClick={() => handleAssign(currentUserId)}
-          className="bg-brand-black text-white text-sm font-medium px-3 py-2 rounded hover:opacity-80 disabled:opacity-50"
+          className="text-xs text-brand-mid-grey hover:text-white"
         >
           Take it
         </button>

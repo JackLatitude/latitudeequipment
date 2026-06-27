@@ -17,7 +17,7 @@ export default async function KitsPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-xl font-semibold text-brand-black">Kits</h1>
+        <h1 className="text-xl font-semibold text-white">Kits</h1>
         <Link
           href="/kits/new"
           className="bg-brand-black text-brand-white text-sm font-medium px-4 py-2 rounded hover:bg-brand-red transition-colors"

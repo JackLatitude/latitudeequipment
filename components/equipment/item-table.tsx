@@ -13,6 +13,8 @@ type Props = {
 }
 
 export function ItemTable({ items, profiles, search, holderId, onSearchChange, onHolderChange }: Props) {
+  const inputClass = 'border border-brand-rule-grey rounded px-3 py-2 text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
+
   return (
     <div>
       <div className="flex gap-3 mb-4">
@@ -21,12 +23,12 @@ export function ItemTable({ items, profiles, search, holderId, onSearchChange, o
           placeholder="Search by name or serial…"
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="border border-brand-rule-grey rounded px-3 py-2 text-sm w-72 focus:outline-none focus:ring-2 focus:ring-brand-black"
+          className={`${inputClass} w-72`}
         />
         <select
           value={holderId}
           onChange={(e) => onHolderChange(e.target.value)}
-          className="border border-brand-rule-grey rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-black"
+          className={inputClass}
         >
           <option value="">All holders</option>
           <option value="unassigned">Unassigned</option>
@@ -50,9 +52,9 @@ export function ItemTable({ items, profiles, search, holderId, onSearchChange, o
           </thead>
           <tbody>
             {items.map((item) => (
-              <tr key={item.id} className="border-b border-brand-rule-grey hover:bg-brand-light-grey">
+              <tr key={item.id} className="border-b border-brand-rule-grey hover:bg-brand-dark-surface">
                 <td className="py-2.5 pr-4">
-                  <Link href={`/equipment/${item.id}`} className="font-medium text-brand-black hover:underline">
+                  <Link href={`/equipment/${item.id}`} className="font-medium text-white hover:underline">
                     {item.name}
                   </Link>
                 </td>

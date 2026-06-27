@@ -46,16 +46,16 @@ export default async function KitDetailPage({ params }: Props) {
   return (
     <div className="max-w-3xl">
       <div className="mb-6">
-        <Link href="/kits" className="text-sm text-brand-mid-grey hover:text-brand-black">
+        <Link href="/kits" className="text-sm text-brand-mid-grey hover:text-white">
           ← Kits
         </Link>
       </div>
 
       <div className="flex items-start justify-between mb-2">
-        <h1 className="text-xl font-semibold text-brand-black">{kit.name}</h1>
+        <h1 className="text-xl font-semibold text-white">{kit.name}</h1>
         <Link
           href={`/kits/${kit.id}/edit`}
-          className="text-sm text-brand-mid-grey border border-brand-rule-grey rounded px-3 py-1.5 hover:text-brand-black"
+          className="text-sm text-brand-mid-grey border border-brand-rule-grey rounded px-3 py-1.5 hover:text-white"
         >
           Edit
         </Link>
@@ -66,7 +66,7 @@ export default async function KitDetailPage({ params }: Props) {
       )}
 
       <div className="mb-8">
-        <h2 className="text-sm font-medium text-brand-black mb-2">Kit holder</h2>
+        <h2 className="text-sm font-medium text-white mb-2">Kit holder</h2>
         <KitAssignControl
           kitId={kit.id}
           currentHolderId={kit.current_holder_id}
@@ -80,7 +80,7 @@ export default async function KitDetailPage({ params }: Props) {
       </div>
 
       <div>
-        <h2 className="text-sm font-medium text-brand-black mb-3">
+        <h2 className="text-sm font-medium text-white mb-3">
           Items ({kitItems.length})
         </h2>
         {kitItems.length === 0 ? (
@@ -98,7 +98,7 @@ export default async function KitDetailPage({ params }: Props) {
               {kitItems.map((item) => (
                 <tr key={item.id} className="border-b border-brand-rule-grey">
                   <td className="py-2.5 pr-4">
-                    <Link href={`/equipment/${item.id}`} className="font-medium text-brand-black hover:underline">
+                    <Link href={`/equipment/${item.id}`} className="font-medium text-white hover:underline">
                       {item.name}
                     </Link>
                   </td>

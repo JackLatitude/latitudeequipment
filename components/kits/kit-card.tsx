@@ -7,9 +7,9 @@ export function KitCard({ kit, itemCount }: Props) {
   return (
     <Link
       href={`/kits/${kit.id}`}
-      className="block border border-brand-rule-grey rounded-lg p-4 hover:border-brand-black transition-colors"
+      className="block border border-brand-rule-grey rounded-lg p-4 hover:border-white transition-colors bg-brand-dark-surface"
     >
-      <h2 className="font-medium text-brand-black mb-1">{kit.name}</h2>
+      <h2 className="font-medium text-white mb-1">{kit.name}</h2>
       {kit.description && (
         <p className="text-sm text-brand-mid-grey mb-3">{kit.description}</p>
       )}

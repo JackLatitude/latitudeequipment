@@ -37,16 +37,16 @@ export default function NewKitPage() {
   }
 
   const inputClass =
-    'w-full border border-brand-rule-grey rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-brand-red'
+    'w-full border border-brand-rule-grey rounded px-3 py-2 text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
 
   return (
     <div className="max-w-lg">
       <div className="mb-6">
-        <Link href="/kits" className="text-sm text-brand-mid-grey hover:text-brand-black">
+        <Link href="/kits" className="text-sm text-brand-mid-grey hover:text-white">
           ← Kits
         </Link>
       </div>
-      <h1 className="text-xl font-semibold text-brand-black mb-6">Add kit</h1>
+      <h1 className="text-xl font-semibold text-white mb-6">Add kit</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Field label="Kit name" required>
           <input name="name" required className={inputClass} />
@@ -75,7 +75,7 @@ export default function NewKitPage() {
           </button>
           <Link
             href="/kits"
-            className="text-sm font-medium text-brand-mid-grey px-4 py-2 hover:text-brand-black"
+            className="text-sm font-medium text-brand-mid-grey px-4 py-2 hover:text-white"
           >
             Cancel
           </Link>
