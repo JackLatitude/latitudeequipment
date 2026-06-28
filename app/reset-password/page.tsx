@@ -17,24 +17,36 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {
+    // PKCE flow: token_hash in query params
     const params = new URLSearchParams(window.location.search)
     const token_hash = params.get('token_hash')
-    const type = params.get('type')
-
-    if (token_hash && type === 'recovery') {
-      // PKCE / token_hash flow
+    const queryType = params.get('type')
+    if (token_hash && queryType === 'recovery') {
       supabase.auth.verifyOtp({ token_hash, type: 'recovery' }).then(({ error }) => {
         if (error) setExpired(true)
         else setReady(true)
       })
-    } else {
-      // Implicit flow — browser client auto-detects session from URL hash
-      // Also handles arriving here already signed in (e.g. via invite callback)
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) setReady(true)
-        else setExpired(true)
-      })
+      return
     }
+
+    // Implicit flow: access_token in URL hash fragment (#access_token=...&type=recovery)
+    const hash = new URLSearchParams(window.location.hash.slice(1))
+    const access_token = hash.get('access_token')
+    const refresh_token = hash.get('refresh_token')
+    const hashType = hash.get('type')
+    if (access_token && hashType === 'recovery') {
+      supabase.auth.setSession({ access_token, refresh_token: refresh_token ?? '' }).then(({ error }) => {
+        if (error) setExpired(true)
+        else setReady(true)
+      })
+      return
+    }
+
+    // Already authenticated (invite flow or direct navigation)
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) setReady(true)
+      else setExpired(true)
+    })
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleSubmit(e: React.FormEvent) {
