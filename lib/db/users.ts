@@ -39,7 +39,7 @@ export async function inviteUser(email: string): Promise<void> {
   const adminClient = createAdminClient()
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
   const { error } = await adminClient.auth.admin.inviteUserByEmail(email, {
-    redirectTo: `${siteUrl}/auth/callback?next=/reset-password`,
+    redirectTo: `${siteUrl}/reset-password`,
   })
   if (error) throw new Error(error.message)
 }

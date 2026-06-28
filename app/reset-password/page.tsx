@@ -1,17 +1,41 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 
 export default function ResetPasswordPage() {
   const router = useRouter()
   const supabase = createClient()
+  const [ready, setReady] = useState(false)
+  const [expired, setExpired] = useState(false)
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const token_hash = params.get('token_hash')
+    const type = params.get('type')
+
+    if (token_hash && type === 'recovery') {
+      // PKCE / token_hash flow
+      supabase.auth.verifyOtp({ token_hash, type: 'recovery' }).then(({ error }) => {
+        if (error) setExpired(true)
+        else setReady(true)
+      })
+    } else {
+      // Implicit flow — browser client auto-detects session from URL hash
+      // Also handles arriving here already signed in (e.g. via invite callback)
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) setReady(true)
+        else setExpired(true)
+      })
+    }
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -42,41 +66,55 @@ export default function ResetPasswordPage() {
         <Image src="/logos/logo_equipment_dark.png" alt="Latitude Equipment" width={123} height={44} priority />
       </div>
       <div className="w-full max-w-sm bg-brand-dark-surface rounded-lg border border-brand-rule-grey p-8 mt-16">
-        <h1 className="text-xl font-bold text-white mb-2">Set new password</h1>
-        <p className="text-sm text-brand-mid-grey mb-6">Choose a new password for your account.</p>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-white mb-1">New password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              autoFocus
-              minLength={8}
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-white mb-1">Confirm password</label>
-            <input
-              type="password"
-              value={confirm}
-              onChange={(e) => setConfirm(e.target.value)}
-              required
-              minLength={8}
-              className={inputClass}
-            />
-          </div>
-          {error && <p className="text-sm text-brand-red">{error}</p>}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-brand-red text-white rounded px-3 py-2 text-sm font-bold hover:opacity-90 disabled:opacity-50 transition-opacity"
-          >
-            {loading ? 'Saving…' : 'Set new password'}
-          </button>
-        </form>
+        {expired ? (
+          <>
+            <h1 className="text-xl font-bold text-white mb-2">Link expired</h1>
+            <p className="text-sm text-brand-mid-grey mb-6">This reset link has expired or already been used. Request a new one.</p>
+            <Link href="/forgot-password" className="text-sm text-brand-red hover:opacity-80 transition-opacity">
+              Request new link →
+            </Link>
+          </>
+        ) : !ready ? (
+          <p className="text-sm text-brand-mid-grey">Verifying link…</p>
+        ) : (
+          <>
+            <h1 className="text-xl font-bold text-white mb-2">Set new password</h1>
+            <p className="text-sm text-brand-mid-grey mb-6">Choose a new password for your account.</p>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">New password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  autoFocus
+                  minLength={8}
+                  className={inputClass}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-white mb-1">Confirm password</label>
+                <input
+                  type="password"
+                  value={confirm}
+                  onChange={(e) => setConfirm(e.target.value)}
+                  required
+                  minLength={8}
+                  className={inputClass}
+                />
+              </div>
+              {error && <p className="text-sm text-brand-red">{error}</p>}
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-brand-red text-white rounded px-3 py-2 text-sm font-bold hover:opacity-90 disabled:opacity-50 transition-opacity"
+              >
+                {loading ? 'Saving…' : 'Set new password'}
+              </button>
+            </form>
+          </>
+        )}
       </div>
     </div>
   )
