@@ -31,7 +31,7 @@ export function AssignControl({ itemId, currentHolderId, kitId, profiles, curren
         value={selected}
         onChange={(e) => setSelected(e.target.value)}
         disabled={loading}
-        className="border border-brand-rule-grey rounded px-2 py-1 text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red"
+        className="border border-brand-rule-grey rounded px-2 py-1 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red"
       >
         {kitId === null && <option value="">Unassigned</option>}
         {profiles.map((p) => (

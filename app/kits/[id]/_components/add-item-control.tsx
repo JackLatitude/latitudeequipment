@@ -32,7 +32,7 @@ export function AddItemControl({ looseItems, onAdd }: Props) {
         value={selected}
         onChange={(e) => setSelected(e.target.value)}
         disabled={loading}
-        className="border border-brand-rule-grey rounded px-2 py-1.5 text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red flex-1 max-w-xs"
+        className="border border-brand-rule-grey rounded px-2 py-1.5 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red flex-1 max-w-xs"
       >
         <option value="">Select a loose item…</option>
         {looseItems.map((item) => (

@@ -37,7 +37,7 @@ export default function NewKitPage() {
   }
 
   const inputClass =
-    'w-full border border-brand-rule-grey rounded px-3 py-2 text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
+    'w-full border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
 
   return (
     <div className="max-w-lg">
