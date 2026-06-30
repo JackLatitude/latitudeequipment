@@ -2,8 +2,7 @@
 
 import Link from 'next/link'
 import Image from 'next/image'
-import { usePathname, useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { usePathname } from 'next/navigation'
 
 type Props = { displayName: string }
 
@@ -40,14 +39,6 @@ function SettingsIcon({ active }: { active: boolean }) {
 
 export function MobileNav({ displayName }: Props) {
   const pathname = usePathname()
-  const router = useRouter()
-  const supabase = createClient()
-
-  async function handleSignOut() {
-    await supabase.auth.signOut()
-    router.push('/login')
-    router.refresh()
-  }
 
   const tabs = [
     { href: '/equipment', label: 'Equipment', Icon: EquipmentIcon },
