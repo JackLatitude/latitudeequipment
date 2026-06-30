@@ -40,7 +40,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <MobileNav displayName={profile.display_name} />
           </>
         )}
-        <main className="max-w-6xl mx-auto px-4 py-4 pb-24 lg:px-6 lg:py-8 lg:pb-8">
+        <main className="max-w-6xl mx-auto px-4 pt-16 pb-24 lg:pt-8 lg:px-6 lg:pb-8">
           {children}
         </main>
       </body>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { Field } from '@/components/ui/field'
 import { createClient } from '@/lib/supabase/client'
 import type { Profile } from '@/lib/types'
@@ -11,6 +12,7 @@ const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2 text-
 const btnClass = 'bg-brand-black text-brand-white text-sm font-medium px-4 py-2 rounded hover:opacity-80 disabled:opacity-50'
 
 export function SettingsForm({ profile, email }: Props) {
+  const router = useRouter()
   const [displayName, setDisplayName] = useState(profile.display_name)
   const [inviteEmail, setInviteEmail] = useState('')
   const [currentPassword, setCurrentPassword] = useState('')
@@ -185,6 +187,21 @@ export function SettingsForm({ profile, email }: Props) {
             {changingPassword ? 'Updating…' : 'Change password'}
           </button>
         </form>
+      </section>
+
+      <section className="pt-4 border-t border-brand-rule-grey lg:hidden">
+        <button
+          type="button"
+          onClick={async () => {
+            const supabase = createClient()
+            await supabase.auth.signOut()
+            router.push('/login')
+            router.refresh()
+          }}
+          className="w-full text-sm font-medium text-brand-mid-grey hover:text-white py-2 transition-colors"
+        >
+          Sign out
+        </button>
       </section>
     </div>
   )
