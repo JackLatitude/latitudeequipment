@@ -4,8 +4,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
-type Props = { displayName: string }
-
 function EquipmentIcon({ active }: { active: boolean }) {
   const c = active ? '#ffffff' : '#888888'
   return (
@@ -37,7 +35,7 @@ function SettingsIcon({ active }: { active: boolean }) {
   )
 }
 
-export function MobileNav({ displayName }: Props) {
+export function MobileNav() {
   const pathname = usePathname()
 
   const tabs = [

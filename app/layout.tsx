@@ -37,7 +37,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {profile && (
           <>
             <Nav displayName={profile.display_name} />
-            <MobileNav displayName={profile.display_name} />
+            <MobileNav />
           </>
         )}
         <main className="max-w-6xl mx-auto px-4 pt-16 pb-24 lg:pt-8 lg:px-6 lg:pb-8">
