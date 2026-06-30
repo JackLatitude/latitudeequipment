@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generate PWA icons and favicon from LATITUDE O.png."""
 from PIL import Image
-import struct, zlib, os
+import os
 
 SRC = "/Users/jdownes/Documents/Latitude/LATITUDE LOGO /4. Icon/LATITUDE O.png"
 OUT = os.path.join(os.path.dirname(__file__), "../public")
