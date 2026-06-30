@@ -17,11 +17,11 @@ export default async function EquipmentPage({ searchParams }: Props) {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-xl font-semibold text-white">Equipment</h1>
         <Link
           href="/equipment/new"
-          className="bg-brand-black text-white text-sm font-medium px-4 py-2 rounded hover:opacity-80"
+          className="bg-brand-black text-white text-sm font-medium px-4 py-2.5 rounded hover:opacity-80 text-center sm:py-2"
         >
           Add item
         </Link>
