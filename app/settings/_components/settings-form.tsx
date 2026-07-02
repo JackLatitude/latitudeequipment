@@ -9,7 +9,7 @@ import type { Profile } from '@/lib/types'
 type Props = { profile: Profile; email: string }
 
 const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
-const btnClass = 'bg-brand-black text-brand-white text-sm font-medium px-4 py-2 rounded hover:opacity-80 disabled:opacity-50'
+const btnClass = 'bg-brand-red text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90 disabled:opacity-50'
 
 export function SettingsForm({ profile, email }: Props) {
   const router = useRouter()

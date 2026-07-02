@@ -48,7 +48,7 @@ export function EditKitForm({ kit }: Props) {
         <button
           type="submit"
           disabled={loading}
-          className="bg-brand-black text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90 disabled:opacity-50"
+          className="bg-brand-red text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90 disabled:opacity-50"
         >
           {loading ? 'Saving…' : 'Save changes'}
         </button>

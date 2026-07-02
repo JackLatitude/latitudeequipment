@@ -46,7 +46,7 @@ export default function NewKitPage() {
           ← Kits
         </Link>
       </div>
-      <h1 className="text-xl font-semibold text-white mb-6">Add kit</h1>
+      <h1 className="text-2xl font-bold text-white mb-6">Add kit</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Field label="Kit name" required>
           <input name="name" required className={inputClass} />
@@ -69,7 +69,7 @@ export default function NewKitPage() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-brand-black text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90 disabled:opacity-50"
+            className="bg-brand-red text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90 disabled:opacity-50"
           >
             {loading ? 'Saving…' : 'Add kit'}
           </button>

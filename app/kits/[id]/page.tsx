@@ -66,10 +66,10 @@ export default async function KitDetailPage({ params }: Props) {
       </div>
 
       <div className="flex items-start justify-between mb-2">
-        <h1 className="text-xl font-semibold text-white">{kit.name}</h1>
+        <h1 className="text-2xl font-bold text-white">{kit.name}</h1>
         <Link
           href={`/kits/${kit.id}/edit`}
-          className="text-sm text-brand-mid-grey border border-brand-rule-grey rounded px-3 py-1.5 hover:text-white"
+          className="text-sm text-white border border-brand-rule-grey hover:border-white rounded px-3 py-1.5 transition-colors flex-shrink-0 ml-4"
         >
           Edit
         </Link>
@@ -106,7 +106,7 @@ export default async function KitDetailPage({ params }: Props) {
         )}
 
         {kitItems.length === 0 ? (
-          <p className="text-sm text-brand-mid-grey">No items in this kit.</p>
+          <p className="text-sm text-brand-mid-grey">No items yet. Add a loose item from the control above, or assign items to this kit from the equipment list.</p>
         ) : (
           <>
             {/* Mobile cards */}

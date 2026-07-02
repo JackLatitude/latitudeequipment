@@ -39,7 +39,7 @@ export default function NewItemPage() {
       <div className="mb-6">
         <Link href="/equipment" className="text-sm text-brand-mid-grey hover:text-white">← Equipment</Link>
       </div>
-      <h1 className="text-xl font-semibold text-white mb-6">Add item</h1>
+      <h1 className="text-2xl font-bold text-white mb-6">Add item</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <Field label="Name" required>
           <input name="name" required className={inputClass} />
@@ -72,7 +72,7 @@ export default function NewItemPage() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-brand-black text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90 disabled:opacity-50"
+            className="bg-brand-red text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90 disabled:opacity-50"
           >
             {loading ? 'Saving…' : 'Add item'}
           </button>

@@ -81,7 +81,7 @@ export function ItemTable({ items, profiles, search, holderId, onSearchChange, o
       </div>
 
       {items.length === 0 ? (
-        <p className="text-sm text-brand-mid-grey">No equipment found.</p>
+        <p className="text-sm text-brand-mid-grey">No equipment matches your filters. Try clearing the search or selecting a different holder.</p>
       ) : (
         <div className="space-y-4">
           {groups.map(([category, groupItems]) => {
@@ -97,10 +97,10 @@ export function ItemTable({ items, profiles, search, holderId, onSearchChange, o
                   <span className="text-xs font-medium uppercase tracking-wider text-brand-mid-grey group-hover:text-white transition-colors">
                     {category}
                   </span>
-                  <span className="text-xs text-brand-rule-grey group-hover:text-brand-mid-grey transition-colors">
+                  <span className="text-xs text-brand-mid-grey/50 group-hover:text-brand-mid-grey transition-colors">
                     {groupItems.length}
                   </span>
-                  <span className="ml-auto text-brand-rule-grey group-hover:text-brand-mid-grey transition-colors">
+                  <span className="ml-auto text-brand-mid-grey/50 group-hover:text-brand-mid-grey transition-colors">
                     {isCollapsed ? <ChevronRight /> : <ChevronDown />}
                   </span>
                 </button>

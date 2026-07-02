@@ -47,33 +47,18 @@ export default async function ItemDetailPage({ params }: Props) {
       </div>
 
       <div className="flex items-start justify-between mb-6">
-        <h1 className="text-xl font-semibold text-white">{item.name}</h1>
+        <h1 className="text-2xl font-bold text-white">{item.name}</h1>
         <Link
           href={`/equipment/${item.id}/edit`}
-          className="text-sm text-brand-mid-grey hover:text-white border border-brand-rule-grey rounded px-3 py-1.5"
+          className="text-sm text-white border border-brand-rule-grey hover:border-white rounded px-3 py-1.5 transition-colors flex-shrink-0 ml-4"
         >
           Edit
         </Link>
       </div>
 
-      <dl className="grid grid-cols-2 gap-x-6 gap-y-4 mb-8 text-sm">
-        {[
-          ['Serial number', item.serial_number ?? '—'],
-          ['Category', item.category ?? '—'],
-          ['Kit', item.kit?.name ?? '—'],
-          ['Value', item.value != null ? `£${item.value}` : '—'],
-          ['Country of origin', item.country_of_origin ?? '—'],
-          ['Weight', item.weight_kg != null ? `${item.weight_kg} kg` : '—'],
-        ].map(([label, value]) => (
-          <div key={label}>
-            <dt className="text-brand-mid-grey">{label}</dt>
-            <dd className="font-medium text-white">{value}</dd>
-          </div>
-        ))}
-      </dl>
-
+      {/* Current holder — shown first, most actionable field */}
       <div className="mb-8">
-        <h2 className="text-sm font-medium text-white mb-2">Current holder</h2>
+        <p className="text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-2">Current holder</p>
         <AssignControl
           itemId={item.id}
           currentHolderId={item.current_holder_id}
@@ -84,17 +69,33 @@ export default async function ItemDetailPage({ params }: Props) {
         />
       </div>
 
+      <dl className="grid grid-cols-2 gap-x-6 gap-y-5 mb-8">
+        {[
+          ['Serial number', item.serial_number ?? '—'],
+          ['Category', item.category ?? '—'],
+          ['Kit', item.kit?.name ?? '—'],
+          ['Value', item.value != null ? `£${item.value.toLocaleString()}` : '—'],
+          ['Country of origin', item.country_of_origin ?? '—'],
+          ['Weight', item.weight_kg != null ? `${item.weight_kg} kg` : '—'],
+        ].map(([label, value]) => (
+          <div key={label}>
+            <dt className="text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-0.5">{label}</dt>
+            <dd className="text-sm font-medium text-white">{value}</dd>
+          </div>
+        ))}
+      </dl>
+
       {item.notes && (
         <div className="mb-8">
-          <h2 className="text-sm font-medium text-white mb-1">Notes</h2>
+          <p className="text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-1">Notes</p>
           <p className="text-sm text-brand-mid-grey">{item.notes}</p>
         </div>
       )}
 
       <div>
-        <h2 className="text-sm font-medium text-white mb-3">Assignment history</h2>
+        <p className="text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-3">Assignment history</p>
         {history.length === 0 ? (
-          <p className="text-sm text-brand-mid-grey">No history yet.</p>
+          <p className="text-sm text-brand-mid-grey">No assignments recorded yet. Use the holder control above to assign this item.</p>
         ) : (
           <ul className="space-y-2">
             {history.map((h) => (
@@ -103,7 +104,7 @@ export default async function ItemDetailPage({ params }: Props) {
                   {h.assigned_to?.display_name ?? 'Unassigned'}
                 </span>
                 {' '}— assigned by {h.assigned_by?.display_name}{' '}
-                <span className="text-brand-rule-grey">
+                <span className="text-brand-mid-grey/60">
                   {new Date(h.assigned_at).toLocaleDateString('en-GB', {
                     day: 'numeric', month: 'short', year: 'numeric',
                   })}
