@@ -29,9 +29,9 @@ export function Nav({ displayName }: Props) {
     // 3px brand-red rule sits above the black bar via the border-t
     <nav className="hidden lg:flex bg-brand-black border-t-[3px] border-brand-red px-6 items-center justify-between h-16">
       <div className="flex items-center gap-6">
-        {/* logo_equipment_dark.png: 1400×499 — rendered 44px tall → width ≈ 123px */}
+        {/* badge_white_full.png: 1600×570 — rendered 44px tall → width ≈ 123px */}
         <Image
-          src="/logos/logo_equipment_dark.png"
+          src="/logos/badge_white_full.png"
           alt="Latitude Equipment"
           width={123}
           height={44}

@@ -48,11 +48,12 @@ export function MobileNav() {
     <>
       {/* Slim top bar — mobile only */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-40 bg-brand-black border-t-[3px] border-brand-red h-12 flex items-center justify-center">
+        {/* badge_white_wordmark.png: 1600×431 — rendered 28px tall → width ≈ 104px */}
         <Image
-          src="/logos/logo_equipment_dark.png"
+          src="/logos/badge_white_wordmark.png"
           alt="Latitude Equipment"
-          width={100}
-          height={36}
+          width={104}
+          height={28}
           priority
         />
       </div>

@@ -32,7 +32,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-brand-black">
       <div className="w-full bg-brand-black border-t-[3px] border-brand-red flex items-center px-8 h-16 fixed top-0 left-0">
-        <Image src="/logos/logo_equipment_dark.png" alt="Latitude Equipment" width={123} height={44} priority />
+        <Image src="/logos/badge_white_full.png" alt="Latitude Equipment" width={123} height={44} priority />
       </div>
       <div className="w-full max-w-sm bg-brand-dark-surface rounded-lg border border-brand-rule-grey p-8 mt-16">
         <h1 className="text-xl font-bold text-white mb-6">Sign in</h1>
