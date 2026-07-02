@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Field } from '@/components/ui/field'
+import { ITEM_CATEGORIES } from '@/lib/constants'
 
 export default function NewItemPage() {
   const router = useRouter()
@@ -47,7 +48,12 @@ export default function NewItemPage() {
           <input name="serial_number" className={inputClass} />
         </Field>
         <Field label="Category">
-          <input name="category" placeholder="e.g. Drone, Battery, Lens" className={inputClass} />
+          <select name="category" className={inputClass}>
+            <option value="">Select a category</option>
+            {ITEM_CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
         </Field>
         <Field label="Value (£)">
           <input name="value" type="number" step="0.01" min="0" className={inputClass} />

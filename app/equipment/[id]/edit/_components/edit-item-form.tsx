@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Field } from '@/components/ui/field'
 import type { Item, Kit } from '@/lib/types'
+import { ITEM_CATEGORIES } from '@/lib/constants'
 
 type Props = { item: Item; kits: Kit[] }
 
@@ -74,7 +75,12 @@ export function EditItemForm({ item, kits }: Props) {
         <input name="serial_number" defaultValue={item.serial_number ?? ''} className={inputClass} />
       </Field>
       <Field label="Category">
-        <input name="category" defaultValue={item.category ?? ''} placeholder="e.g. Drone, Battery, Lens" className={inputClass} />
+        <select name="category" defaultValue={item.category ?? ''} className={inputClass}>
+          <option value="">Select a category</option>
+          {ITEM_CATEGORIES.map((c) => (
+            <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
       </Field>
       <Field label="Kit">
         <select name="kit_id" defaultValue={item.kit_id ?? ''} className={inputClass}>
