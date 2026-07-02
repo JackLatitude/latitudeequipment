@@ -5,5 +5,6 @@ export const ITEM_CATEGORIES = [
   'Batteries and Chargers',
   'Grip',
   'Lighting',
+  'Monitoring',
   'Accessories',
 ] as const
