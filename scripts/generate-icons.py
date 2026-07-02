@@ -14,6 +14,14 @@ left = (img.width - size) // 2
 top = (img.height - size) // 2
 img = img.crop((left, top, left + size, top + size))
 
+# Remove white background — make near-white pixels transparent
+pixels = img.load()
+for y in range(img.height):
+    for x in range(img.width):
+        r, g, b, a = pixels[x, y]
+        if r > 230 and g > 230 and b > 230:
+            pixels[x, y] = (r, g, b, 0)
+
 # PWA icons
 for px in [192, 512]:
     resized = img.resize((px, px), Image.LANCZOS)
