@@ -2,7 +2,7 @@ export const ITEM_CATEGORIES = [
   'Drones',
   'Cameras',
   'Lenses',
-  'Batteries',
+  'Batteries and Chargers',
   'Grip',
   'Lighting',
   'Accessories',
