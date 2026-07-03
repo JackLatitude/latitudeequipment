@@ -118,14 +118,14 @@ export function ItemTable({ items, profiles, onHireItemIds, search, holderId, on
                           className="flex items-center justify-between bg-brand-dark-surface border border-brand-rule-grey rounded-lg px-4 py-3 active:opacity-70"
                         >
                           <div className="min-w-0">
-                            <p className="font-medium text-white truncate">
-                              {item.name}
+                            <div className="flex items-center min-w-0">
+                              <p className="font-medium text-white truncate">{item.name}</p>
                               {onHire.has(item.id) && (
-                                <span className="text-[10px] text-brand-red bg-brand-red/10 border border-brand-red/30 rounded-full px-1.5 py-0.5 ml-2 align-middle whitespace-nowrap">
+                                <span className="text-[10px] text-brand-red bg-brand-red/10 border border-brand-red/30 rounded-full px-1.5 py-0.5 ml-2 whitespace-nowrap flex-shrink-0">
                                   On hire
                                 </span>
                               )}
-                            </p>
+                            </div>
                             <p className="text-sm text-brand-mid-grey mt-0.5">
                               {item.serial_number ? item.serial_number : '—'}
                               {item.kit?.name ? ` · ${item.kit.name}` : ''}
