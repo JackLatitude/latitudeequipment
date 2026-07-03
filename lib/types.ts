@@ -64,3 +64,61 @@ export type CreateKitData = {
   description?: string
   current_holder_id: string
 }
+
+export type Client = {
+  id: string
+  name: string
+  contact_name: string | null
+  email: string | null
+  phone: string | null
+  address: string | null
+  notes: string | null
+  created_at: string
+}
+
+export type CreateClientData = {
+  name: string
+  contact_name?: string
+  email?: string
+  phone?: string
+  address?: string
+  notes?: string
+}
+
+export type HireStatus = 'draft' | 'active' | 'returned'
+
+export type Hire = {
+  id: string
+  ref: string
+  title: string
+  client_id: string
+  client?: Client
+  start_date: string | null
+  end_date: string | null
+  status: HireStatus
+  notes: string | null
+  created_by_id: string | null
+  created_at: string
+  hire_items?: HireItem[]
+}
+
+export type HireItem = {
+  id: string
+  hire_id: string
+  item_id: string
+  item?: Item
+  hire?: Hire
+  checked_out_at: string | null
+  checked_in_at: string | null
+  condition_out: string | null
+  condition_in: string | null
+}
+
+export type CreateHireData = {
+  title: string
+  client_id: string
+  start_date?: string
+  end_date?: string
+  notes?: string
+  created_by_id: string
+}
