@@ -28,6 +28,12 @@ for name, fname in {
 }.items():
     pdfmetrics.registerFont(TTFont(name, os.path.join(FONTS, fname)))
 
+# Register system ZapfDingbats TTF for proper Unicode checkmark rendering.
+# ReportLab's built-in ZapfDingbats (Type1) uses a custom encoding that does not
+# map to U+2713 ✓; the system TTF variant handles it correctly.
+pdfmetrics.registerFont(TTFont("ZapfDingbatsTTF", "/System/Library/Fonts/ZapfDingbats.ttf"))
+CHECK = '✓'  # ✓ glyph present in ZapfDingbatsTTF
+
 BRAND_RED = colors.HexColor("#ED2643")
 BLACK = colors.HexColor("#000000")
 WHITE = colors.white
@@ -163,10 +169,12 @@ def build_story(hire):
 
     story.append(Paragraph("EQUIPMENT", STYLES["H1"]))
     head = [Paragraph(h, STYLES["CellHead"]) for h in
-            ["Item", "Serial No.", "Category", "Out ✓", "In ✓"]]
+            ["Item", "Serial No.", "Category",
+             f'Out <font name="ZapfDingbatsTTF">{CHECK}</font>',
+             f'In <font name="ZapfDingbatsTTF">{CHECK}</font>']]
     rows = [head]
     for it in hire["items"]:
-        in_mark = "✓" if it.get("checked_in") else ""
+        in_mark = f'<font name="ZapfDingbatsTTF">{CHECK}</font>' if it.get("checked_in") else ""
         rows.append([
             Paragraph(it.get("name", ""), STYLES["Cell"]),
             Paragraph(it.get("serial_number") or "", STYLES["Cell"]),
