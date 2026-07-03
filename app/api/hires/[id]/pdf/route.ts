@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
 import { getHire } from '@/lib/db/hires'
+import { generateHirePdf, type HirePdfData } from '@/lib/pdf/hire-pdf'
 import { NextResponse } from 'next/server'
-import { spawn } from 'child_process'
-import path from 'path'
+
+export const runtime = 'nodejs'
 
 type Ctx = { params: Promise<{ id: string }> }
 
@@ -17,7 +18,7 @@ export async function GET(request: Request, { params }: Ctx) {
 
   const checkedOutAt = hire.hire_items?.find((hi) => hi.checked_out_at)?.checked_out_at ?? null
 
-  const payload = {
+  const data: HirePdfData = {
     ref: hire.ref,
     title: hire.title,
     status: hire.status,
@@ -41,31 +42,16 @@ export async function GET(request: Request, { params }: Ctx) {
     })),
   }
 
-  const script = path.join(process.cwd(), 'scripts', 'generate-hire-pdf.py')
-
-  const pdf = await new Promise<Buffer>((resolve, reject) => {
-    const proc = spawn('python3', [script])
-    const chunks: Buffer[] = []
-    const errChunks: Buffer[] = []
-    proc.stdout.on('data', (c) => chunks.push(c))
-    proc.stderr.on('data', (c) => errChunks.push(c))
-    proc.on('error', reject)
-    proc.on('close', (code) => {
-      if (code === 0) resolve(Buffer.concat(chunks))
-      else reject(new Error(Buffer.concat(errChunks).toString() || `exit ${code}`))
+  try {
+    const pdf = await generateHirePdf(data)
+    return new Response(new Uint8Array(pdf), {
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Content-Disposition': `attachment; filename="${hire.ref}-packing-slip.pdf"`,
+      },
     })
-    proc.stdin.write(JSON.stringify(payload))
-    proc.stdin.end()
-  }).catch((e: Error) => e)
-
-  if (pdf instanceof Error) {
-    return NextResponse.json({ message: `PDF generation failed: ${pdf.message}` }, { status: 500 })
+  } catch (e: unknown) {
+    const message = e instanceof Error ? e.message : 'Unknown error'
+    return NextResponse.json({ message: `PDF generation failed: ${message}` }, { status: 500 })
   }
-
-  return new Response(new Uint8Array(pdf), {
-    headers: {
-      'Content-Type': 'application/pdf',
-      'Content-Disposition': `attachment; filename="${hire.ref}-packing-slip.pdf"`,
-    },
-  })
 }
