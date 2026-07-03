@@ -98,6 +98,8 @@ export type Hire = {
   status: HireStatus
   notes: string | null
   created_by_id: string | null
+  latitude_contact_id: string | null
+  latitude_contact?: Profile
   created_at: string
   hire_items?: HireItem[]
 }
@@ -120,5 +122,6 @@ export type CreateHireData = {
   start_date?: string
   end_date?: string
   notes?: string
+  latitude_contact_id?: string | null
   created_by_id: string
 }

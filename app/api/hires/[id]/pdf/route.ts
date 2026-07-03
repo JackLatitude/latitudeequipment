@@ -33,6 +33,7 @@ export async function GET(request: Request, { params }: Ctx) {
       : null,
     start_date: hire.start_date,
     end_date: hire.end_date,
+    latitude_contact: hire.latitude_contact?.display_name ?? null,
     checked_out_at: checkedOutAt,
     items: (hire.hire_items ?? []).map((hi) => ({
       name: hi.item?.name ?? 'Unknown item',

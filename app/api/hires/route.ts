@@ -18,6 +18,7 @@ export async function POST(request: Request) {
       start_date: body.start_date || undefined,
       end_date: body.end_date || undefined,
       notes: body.notes || undefined,
+      latitude_contact_id: body.latitude_contact_id || null,
       created_by_id: user.id,
     })
     return NextResponse.json(hire)

@@ -20,6 +20,7 @@ export type HirePdfData = {
   } | null
   start_date: string | null
   end_date: string | null
+  latitude_contact: string | null
   checked_out_at: string | null
   items: {
     name: string
@@ -191,6 +192,7 @@ export async function generateHirePdf(hire: HirePdfData): Promise<Uint8Array> {
   if (client?.contact_name) infoRows.push(['Contact', client.contact_name])
   if (client?.email) infoRows.push(['Email', client.email])
   if (client?.phone) infoRows.push(['Phone', client.phone])
+  if (hire.latitude_contact) infoRows.push(['Latitude Contact', hire.latitude_contact])
   if (dates) infoRows.push(['Hire Dates', dates])
   if (hire.checked_out_at) infoRows.push(['Checked Out', fmtDate(hire.checked_out_at)])
   if (client?.address) infoRows.push(['Address', client.address])

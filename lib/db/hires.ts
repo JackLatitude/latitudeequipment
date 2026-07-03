@@ -1,8 +1,11 @@
 import { createClient } from '@/lib/supabase/server'
 import type { Hire, HireItem, CreateHireData } from '@/lib/types'
 
-const HIRE_SELECT = '*, client:clients(*)'
-const HIRE_DETAIL_SELECT = '*, client:clients(*), hire_items(*, item:items(*))'
+// profiles is referenced by both created_by_id and latitude_contact_id, so the
+// embed must name the FK column to disambiguate.
+const HIRE_SELECT = '*, client:clients(*), latitude_contact:profiles!latitude_contact_id(*)'
+const HIRE_DETAIL_SELECT =
+  '*, client:clients(*), latitude_contact:profiles!latitude_contact_id(*), hire_items(*, item:items(*))'
 
 export async function getHires(): Promise<Hire[]> {
   const supabase = await createClient()
@@ -141,6 +144,13 @@ export async function getActiveHireItemsByItemIds(itemIds: string[]): Promise<Hi
     .eq('hire.status', 'active')
   if (error) throw new Error(error.message)
   return data as unknown as HireItem[]
+}
+
+export async function deleteHire(id: string): Promise<void> {
+  const supabase = await createClient()
+  // hire_items rows are removed by the ON DELETE CASCADE on hire_items.hire_id.
+  const { error } = await supabase.from('hires').delete().eq('id', id)
+  if (error) throw new Error(error.message)
 }
 
 export async function getHireStatus(hireId: string): Promise<string | null> {

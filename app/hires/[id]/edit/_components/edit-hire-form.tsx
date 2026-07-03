@@ -2,15 +2,16 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import type { Client, Hire } from '@/lib/types'
+import type { Client, Hire, Profile } from '@/lib/types'
 
 const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
 const labelClass = 'block text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-1.5'
 
-export function EditHireForm({ hire, clients }: { hire: Hire; clients: Client[] }) {
+export function EditHireForm({ hire, clients, profiles }: { hire: Hire; clients: Client[]; profiles: Profile[] }) {
   const router = useRouter()
   const [title, setTitle] = useState(hire.title)
   const [clientId, setClientId] = useState(hire.client_id)
+  const [latitudeContactId, setLatitudeContactId] = useState(hire.latitude_contact_id ?? '')
   const [startDate, setStartDate] = useState(hire.start_date ?? '')
   const [endDate, setEndDate] = useState(hire.end_date ?? '')
   const [notes, setNotes] = useState(hire.notes ?? '')
@@ -27,6 +28,7 @@ export function EditHireForm({ hire, clients }: { hire: Hire; clients: Client[] 
       body: JSON.stringify({
         title,
         client_id: clientId,
+        latitude_contact_id: latitudeContactId || null,
         start_date: startDate || undefined,
         end_date: endDate || undefined,
         notes: notes || null,
@@ -53,6 +55,15 @@ export function EditHireForm({ hire, clients }: { hire: Hire; clients: Client[] 
         <select id="edit-hire-client" value={clientId} onChange={(e) => setClientId(e.target.value)} required className={inputClass}>
           {clients.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
+          ))}
+        </select>
+      </div>
+      <div>
+        <label htmlFor="edit-hire-latitude-contact" className={labelClass}>Latitude Contact</label>
+        <select id="edit-hire-latitude-contact" value={latitudeContactId} onChange={(e) => setLatitudeContactId(e.target.value)} className={inputClass}>
+          <option value="">Unassigned</option>
+          {profiles.map((p) => (
+            <option key={p.id} value={p.id}>{p.display_name}</option>
           ))}
         </select>
       </div>

@@ -6,6 +6,7 @@ import { getKits } from '@/lib/db/kits'
 import { HireActions } from './_components/hire-actions'
 import { HireItemsList } from './_components/hire-items-list'
 import { AddItemsPanel } from './_components/add-items-panel'
+import { DeleteHireButton } from './_components/delete-hire-button'
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -80,6 +81,12 @@ export default async function HireDetailPage({ params }: Props) {
             <dd className="text-sm font-medium text-white">{hire.client.contact_name}</dd>
           </div>
         )}
+        <div>
+          <dt className={labelClass}>Latitude Contact</dt>
+          <dd className="text-sm font-medium text-white">
+            {hire.latitude_contact?.display_name ?? '—'}
+          </dd>
+        </div>
         {hire.notes && (
           <div className="col-span-2">
             <dt className={labelClass}>Notes</dt>
@@ -112,6 +119,10 @@ export default async function HireDetailPage({ params }: Props) {
           />
         </div>
       )}
+
+      <div className="mt-10 pt-6 border-t border-brand-rule-grey">
+        <DeleteHireButton hireId={hire.id} />
+      </div>
     </div>
   )
 }

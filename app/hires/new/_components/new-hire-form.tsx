@@ -2,15 +2,16 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import type { Client } from '@/lib/types'
+import type { Client, Profile } from '@/lib/types'
 
 const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
 const labelClass = 'block text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-1.5'
 
-export function NewHireForm({ clients }: { clients: Client[] }) {
+export function NewHireForm({ clients, profiles }: { clients: Client[]; profiles: Profile[] }) {
   const router = useRouter()
   const [title, setTitle] = useState('')
   const [clientId, setClientId] = useState('')
+  const [latitudeContactId, setLatitudeContactId] = useState('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [notes, setNotes] = useState('')
@@ -27,6 +28,7 @@ export function NewHireForm({ clients }: { clients: Client[] }) {
       body: JSON.stringify({
         title,
         client_id: clientId,
+        latitude_contact_id: latitudeContactId || undefined,
         start_date: startDate || undefined,
         end_date: endDate || undefined,
         notes: notes || undefined,
@@ -60,6 +62,16 @@ export function NewHireForm({ clients }: { clients: Client[] }) {
         <p className="text-xs text-brand-mid-grey mt-1.5">
           Client not listed? <a href="/hires/clients/new" className="text-white hover:underline">Add a client</a> first.
         </p>
+      </div>
+      <div>
+        <label htmlFor="hire-latitude-contact" className={labelClass}>Latitude Contact</label>
+        <select id="hire-latitude-contact" value={latitudeContactId} onChange={(e) => setLatitudeContactId(e.target.value)} className={inputClass}>
+          <option value="">Unassigned</option>
+          {profiles.map((p) => (
+            <option key={p.id} value={p.id}>{p.display_name}</option>
+          ))}
+        </select>
+        <p className="text-xs text-brand-mid-grey mt-1.5">Who at Latitude is managing this hire.</p>
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
