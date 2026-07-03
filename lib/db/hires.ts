@@ -142,3 +142,14 @@ export async function getActiveHireItemsByItemIds(itemIds: string[]): Promise<Hi
   if (error) throw new Error(error.message)
   return data as unknown as HireItem[]
 }
+
+export async function getHireStatus(hireId: string): Promise<string | null> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('hires')
+    .select('status')
+    .eq('id', hireId)
+    .single()
+  if (error) return null
+  return data.status
+}
