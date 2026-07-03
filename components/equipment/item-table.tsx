@@ -7,6 +7,7 @@ import type { Item, Profile } from '@/lib/types'
 type Props = {
   items: Item[]
   profiles: Profile[]
+  onHireItemIds: string[]
   search: string
   holderId: string
   onSearchChange: (v: string) => void
@@ -46,9 +47,10 @@ function groupByCategory(items: Item[]): [string, Item[]][] {
   })
 }
 
-export function ItemTable({ items, profiles, search, holderId, onSearchChange, onHolderChange }: Props) {
+export function ItemTable({ items, profiles, onHireItemIds, search, holderId, onSearchChange, onHolderChange }: Props) {
   const inputClass = 'border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
 
+  const onHire = new Set(onHireItemIds)
   const groups = groupByCategory(items)
   const [collapsed, setCollapsed] = useState<Record<string, boolean>>({})
 
@@ -116,7 +118,14 @@ export function ItemTable({ items, profiles, search, holderId, onSearchChange, o
                           className="flex items-center justify-between bg-brand-dark-surface border border-brand-rule-grey rounded-lg px-4 py-3 active:opacity-70"
                         >
                           <div className="min-w-0">
-                            <p className="font-medium text-white truncate">{item.name}</p>
+                            <p className="font-medium text-white truncate">
+                              {item.name}
+                              {onHire.has(item.id) && (
+                                <span className="text-[10px] text-brand-red bg-brand-red/10 border border-brand-red/30 rounded-full px-1.5 py-0.5 ml-2 align-middle whitespace-nowrap">
+                                  On hire
+                                </span>
+                              )}
+                            </p>
                             <p className="text-sm text-brand-mid-grey mt-0.5">
                               {item.serial_number ? item.serial_number : '—'}
                               {item.kit?.name ? ` · ${item.kit.name}` : ''}
@@ -149,6 +158,11 @@ export function ItemTable({ items, profiles, search, holderId, onSearchChange, o
                               <Link href={`/equipment/${item.id}`} className="font-medium text-white hover:underline">
                                 {item.name}
                               </Link>
+                              {onHire.has(item.id) && (
+                                <span className="text-[10px] text-brand-red bg-brand-red/10 border border-brand-red/30 rounded-full px-1.5 py-0.5 ml-2 align-middle whitespace-nowrap">
+                                  On hire
+                                </span>
+                              )}
                             </td>
                             <td className="py-2.5 pr-4 text-brand-mid-grey">{item.serial_number ?? '—'}</td>
                             <td className="py-2.5 pr-4 text-brand-mid-grey">{item.kit?.name ?? '—'}</td>

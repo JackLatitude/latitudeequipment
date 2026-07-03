@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getItems } from '@/lib/db/items'
 import { getProfiles } from '@/lib/db/users'
+import { getActiveHireItemsByItemIds } from '@/lib/db/hires'
 import { ItemTableWrapper } from './_components/item-table-wrapper'
 
 type Props = {
@@ -14,6 +15,8 @@ export default async function EquipmentPage({ searchParams }: Props) {
     getItems({ search, holderId: holder }),
     getProfiles(),
   ])
+  const activeHireItems = await getActiveHireItemsByItemIds(items.map((i) => i.id))
+  const onHireItemIds = activeHireItems.map((hi) => hi.item_id)
 
   return (
     <div>
@@ -29,6 +32,7 @@ export default async function EquipmentPage({ searchParams }: Props) {
       <ItemTableWrapper
         items={items}
         profiles={profiles}
+        onHireItemIds={onHireItemIds}
         initialSearch={search ?? ''}
         initialHolder={holder ?? ''}
       />

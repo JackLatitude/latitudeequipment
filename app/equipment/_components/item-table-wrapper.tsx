@@ -8,11 +8,12 @@ import type { Item, Profile } from '@/lib/types'
 type Props = {
   items: Item[]
   profiles: Profile[]
+  onHireItemIds: string[]
   initialSearch: string
   initialHolder: string
 }
 
-export function ItemTableWrapper({ items, profiles, initialSearch, initialHolder }: Props) {
+export function ItemTableWrapper({ items, profiles, onHireItemIds, initialSearch, initialHolder }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
 
@@ -27,6 +28,7 @@ export function ItemTableWrapper({ items, profiles, initialSearch, initialHolder
     <ItemTable
       items={items}
       profiles={profiles}
+      onHireItemIds={onHireItemIds}
       search={initialSearch}
       holderId={initialHolder}
       onSearchChange={(v) => update('search', v)}

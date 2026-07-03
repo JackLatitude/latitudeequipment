@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { getItem, deleteItem } from '@/lib/db/items'
 import { getProfiles } from '@/lib/db/users'
 import { getItemHistory, assignItem } from '@/lib/db/assignments'
+import { getActiveHireItemsByItemIds } from '@/lib/db/hires'
 import { createClient } from '@/lib/supabase/server'
 import { AssignControl } from '@/components/equipment/assign-control'
 import { revalidatePath } from 'next/cache'
@@ -24,6 +25,8 @@ export default async function ItemDetailPage({ params }: Props) {
   ])
 
   if (!item) return notFound()
+
+  const [activeHireItem] = await getActiveHireItemsByItemIds([item.id])
 
   async function handleAssign(itemId: string, assignedToId: string | null) {
     'use server'
@@ -55,6 +58,16 @@ export default async function ItemDetailPage({ params }: Props) {
           Edit
         </Link>
       </div>
+
+      {activeHireItem?.hire && (
+        <p className="text-sm mb-4">
+          <span className="text-brand-red font-medium">On hire</span>
+          <span className="text-brand-mid-grey"> — </span>
+          <Link href={`/hires/${activeHireItem.hire_id}`} className="text-white hover:underline">
+            {activeHireItem.hire.title} · {activeHireItem.hire.ref}
+          </Link>
+        </p>
+      )}
 
       {/* Current holder — shown first, most actionable field */}
       <div className="mb-8">
