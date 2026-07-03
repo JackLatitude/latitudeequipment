@@ -8,7 +8,7 @@ type Props = { hireId: string; hireItems: HireItem[]; status: HireStatus }
 
 function formatDateTime(iso: string | null) {
   if (!iso) return null
-  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+  return new Date(iso).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
 }
 
 export function HireItemsList({ hireId, hireItems, status }: Props) {
@@ -60,6 +60,7 @@ export function HireItemsList({ hireId, hireItems, status }: Props) {
               <button
                 onClick={() => call(`/api/hires/${hireId}/items/${hi.item_id}`, 'DELETE', hi.item_id)}
                 disabled={busy !== null}
+                aria-label={`Remove ${hi.item?.name ?? 'item'}`}
                 className="text-xs text-brand-mid-grey hover:text-brand-red transition-colors flex-shrink-0 disabled:opacity-50"
               >
                 Remove
@@ -69,6 +70,7 @@ export function HireItemsList({ hireId, hireItems, status }: Props) {
               <button
                 onClick={() => call(`/api/hires/${hireId}/items/${hi.item_id}/checkin`, 'POST', hi.item_id)}
                 disabled={busy !== null}
+                aria-label={`Check in ${hi.item?.name ?? 'item'}`}
                 className="text-xs text-white border border-brand-rule-grey hover:border-white rounded px-3 py-1.5 transition-colors flex-shrink-0 disabled:opacity-50"
               >
                 {busy === hi.item_id ? 'Checking in…' : 'Check in'}

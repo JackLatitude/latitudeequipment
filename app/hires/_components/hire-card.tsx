@@ -9,7 +9,7 @@ const STATUS_STYLES: Record<string, string> = {
 
 function formatDate(iso: string | null) {
   if (!iso) return null
-  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
 }
 
 export function HireCard({ hire }: { hire: Hire }) {

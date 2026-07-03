@@ -46,12 +46,12 @@ export function NewHireForm({ clients }: { clients: Client[] }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5 max-w-lg">
       <div>
-        <label className={labelClass}>Title</label>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} required autoFocus className={inputClass} placeholder="e.g. Nike Shoot – July 2026" />
+        <label htmlFor="hire-title" className={labelClass}>Title</label>
+        <input id="hire-title" value={title} onChange={(e) => setTitle(e.target.value)} required autoFocus className={inputClass} placeholder="e.g. Nike Shoot – July 2026" />
       </div>
       <div>
-        <label className={labelClass}>Client</label>
-        <select value={clientId} onChange={(e) => setClientId(e.target.value)} required className={inputClass}>
+        <label htmlFor="hire-client" className={labelClass}>Client</label>
+        <select id="hire-client" value={clientId} onChange={(e) => setClientId(e.target.value)} required className={inputClass}>
           <option value="">Select a client…</option>
           {clients.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
@@ -63,17 +63,17 @@ export function NewHireForm({ clients }: { clients: Client[] }) {
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className={labelClass}>Start date</label>
-          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={inputClass} />
+          <label htmlFor="hire-start-date" className={labelClass}>Start date</label>
+          <input id="hire-start-date" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={inputClass} />
         </div>
         <div>
-          <label className={labelClass}>End date</label>
-          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className={inputClass} />
+          <label htmlFor="hire-end-date" className={labelClass}>End date</label>
+          <input id="hire-end-date" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className={inputClass} />
         </div>
       </div>
       <div>
-        <label className={labelClass}>Notes</label>
-        <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className={inputClass} />
+        <label htmlFor="hire-notes" className={labelClass}>Notes</label>
+        <textarea id="hire-notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className={inputClass} />
       </div>
       {error && <p className="text-sm text-brand-red">{error}</p>}
       <button type="submit" disabled={loading} className="bg-brand-red text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90 disabled:opacity-50">
