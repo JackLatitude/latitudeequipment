@@ -43,7 +43,7 @@ Hire management does NOT include pricing, invoicing, or payment tracking.
 | Column | Type | Notes |
 |---|---|---|
 | `id` | uuid PK | |
-| `ref` | text UNIQUE NOT NULL | Auto-generated sequential ref, e.g. `LAT-001` |
+| `ref` | text UNIQUE NOT NULL | Auto-generated on insert via Postgres function: `LAT-` + zero-padded count of existing hires + 1, e.g. `LAT-001`, `LAT-002` |
 | `title` | text NOT NULL | e.g. "Nike Shoot – July 2026" |
 | `client_id` | uuid FK → clients | |
 | `start_date` | date | |
@@ -157,7 +157,7 @@ GET    /api/hires/[id]/pdf                    Generate and stream PDF
 
 POST   /api/clients                           Create client
 PATCH  /api/clients/[id]                      Update client
-DELETE /api/clients/[id]                      Delete client (only if no hires)
+DELETE /api/clients/[id]                      Delete client — returns 409 if client has any hires
 ```
 
 ---
