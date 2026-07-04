@@ -30,13 +30,16 @@ export function Nav({ displayName }: Props) {
     <nav className="hidden lg:flex bg-brand-black border-t-[3px] border-brand-red px-6 items-center justify-between h-16">
       <div className="flex items-center gap-6">
         {/* badge_white_full.png: 1600×570 — rendered 44px tall → width ≈ 123px */}
-        <Image
-          src="/logos/badge_white_full.png"
-          alt="Latitude Equipment"
-          width={123}
-          height={44}
-          priority
-        />
+        <Link href="/dashboard" aria-label="Latitude Equipment — dashboard">
+          <Image
+            src="/logos/badge_white_full.png"
+            alt="Latitude Equipment"
+            width={123}
+            height={44}
+            priority
+          />
+        </Link>
+        <Link href="/dashboard" className={linkClass('/dashboard')}>Dashboard</Link>
         <Link href="/equipment" className={linkClass('/equipment')}>Equipment</Link>
         <Link href="/kits" className={linkClass('/kits')}>Kits</Link>
         <Link href="/hires" className={linkClass('/hires')}>Hires</Link>

@@ -4,6 +4,16 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 
+function HomeIcon({ active }: { active: boolean }) {
+  const c = active ? '#ffffff' : '#888888'
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 10.5 12 3l9 7.5" />
+      <path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5" />
+    </svg>
+  )
+}
+
 function EquipmentIcon({ active }: { active: boolean }) {
   const c = active ? '#ffffff' : '#888888'
   return (
@@ -50,6 +60,7 @@ export function MobileNav() {
   const pathname = usePathname()
 
   const tabs = [
+    { href: '/dashboard', label: 'Home', Icon: HomeIcon },
     { href: '/equipment', label: 'Equipment', Icon: EquipmentIcon },
     { href: '/kits', label: 'Kits', Icon: KitsIcon },
     { href: '/hires', label: 'Hires', Icon: HiresIcon },
