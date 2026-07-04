@@ -54,5 +54,8 @@ export async function deleteClient(id: string): Promise<void> {
   if (countError) throw new Error(countError.message)
   if ((count ?? 0) > 0) throw new Error('CLIENT_HAS_HIRES')
   const { error } = await supabase.from('clients').delete().eq('id', id)
+  // 23503: a hire was created between the count check and the delete —
+  // the FK rejects it; surface as the same guarded error, not a raw 500.
+  if (error?.code === '23503') throw new Error('CLIENT_HAS_HIRES')
   if (error) throw new Error(error.message)
 }

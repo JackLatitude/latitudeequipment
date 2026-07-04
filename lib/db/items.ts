@@ -10,7 +10,11 @@ export async function getItems(filters?: ItemFilters): Promise<Item[]> {
     .order('name')
 
   if (filters?.search) {
-    query = query.or(`name.ilike.%${filters.search}%,serial_number.ilike.%${filters.search}%`)
+    // Strip PostgREST filter-DSL specials so user input can't inject clauses.
+    const s = filters.search.replace(/[,()."\\]/g, ' ').trim()
+    if (s) {
+      query = query.or(`name.ilike.%${s}%,serial_number.ilike.%${s}%`)
+    }
   }
 
   if (filters?.holderId === 'unassigned') {

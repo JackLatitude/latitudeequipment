@@ -32,43 +32,13 @@ export async function assignKit(
   assignedById: string
 ): Promise<void> {
   const supabase = await createClient()
-
-  // Fetch all non-deleted items in this kit
-  const { data: items, error: fetchError } = await supabase
-    .from('items')
-    .select('id')
-    .eq('kit_id', kitId)
-    .is('deleted_at', null)
-  if (fetchError) throw new Error(fetchError.message)
-
-  // Update kit holder
-  const { error: kitError } = await supabase
-    .from('kits')
-    .update({ current_holder_id: assignedToId })
-    .eq('id', kitId)
-  if (kitError) throw new Error(kitError.message)
-
-  if (!items || items.length === 0) return
-
-  // Update all items and write history records
-  const { error: itemsError } = await supabase
-    .from('items')
-    .update({ current_holder_id: assignedToId })
-    .eq('kit_id', kitId)
-    .is('deleted_at', null)
-  if (itemsError) throw new Error(itemsError.message)
-
-  const historyRecords = items.map((item) => ({
-    item_id: item.id,
-    assigned_to_id: assignedToId,
-    assigned_by_id: assignedById,
-    note: `Kit assignment`,
-  }))
-
-  const { error: historyError } = await supabase
-    .from('assignment_history')
-    .insert(historyRecords)
-  if (historyError) throw new Error(historyError.message)
+  // Single transaction: kit holder + item holders + history (migration 0004).
+  const { error } = await supabase.rpc('assign_kit', {
+    p_kit_id: kitId,
+    p_assigned_to: assignedToId,
+    p_assigned_by: assignedById,
+  })
+  if (error) throw new Error(error.message)
 }
 
 export async function getItemHistory(itemId: string): Promise<AssignmentHistory[]> {

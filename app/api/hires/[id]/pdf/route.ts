@@ -52,7 +52,7 @@ export async function GET(request: Request, { params }: Ctx) {
       },
     })
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : 'Unknown error'
-    return NextResponse.json({ message: `PDF generation failed: ${message}` }, { status: 500 })
+    console.error('[api] GET /api/hires/[id]/pdf:', e)
+    return NextResponse.json({ message: 'PDF generation failed' }, { status: 500 })
   }
 }

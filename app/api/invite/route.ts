@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { getProfile, inviteUser } from '@/lib/db/users'
 import { NextResponse } from 'next/server'
+import { serverError, readJson } from '@/lib/api/route-helpers'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -12,12 +13,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ message: 'Admin only' }, { status: 403 })
   }
 
-  const { email } = await request.json()
+  const body = await readJson(request)
+  const email = typeof body?.email === 'string' ? body.email.trim() : ''
+  // Shape check only — Supabase does full validation on its side.
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return NextResponse.json({ message: 'A valid email address is required' }, { status: 400 })
+  }
   try {
     await inviteUser(email)
     return NextResponse.json({ ok: true })
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : 'Unknown error'
-    return NextResponse.json({ message }, { status: 500 })
+    return serverError(e, 'POST /api/invite')
   }
 }

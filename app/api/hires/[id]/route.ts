@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
-import { updateHire, deleteHire } from '@/lib/db/hires'
+import { updateHire, deleteHire, getHireStatus } from '@/lib/db/hires'
 import { NextResponse } from 'next/server'
+import { serverError, readJson } from '@/lib/api/route-helpers'
 
 type Ctx = { params: Promise<{ id: string }> }
 
@@ -10,7 +11,8 @@ export async function PATCH(request: Request, { params }: Ctx) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
 
-  const body = await request.json()
+  const body = await readJson(request)
+  if (!body) return NextResponse.json({ message: 'Invalid JSON body' }, { status: 400 })
   try {
     const hire = await updateHire(id, {
       title: body.title,
@@ -22,8 +24,7 @@ export async function PATCH(request: Request, { params }: Ctx) {
     })
     return NextResponse.json(hire)
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : 'Unknown error'
-    return NextResponse.json({ message }, { status: 500 })
+    return serverError(e, 'hires/[id]')
   }
 }
 
@@ -34,10 +35,21 @@ export async function DELETE(request: Request, { params }: Ctx) {
   if (!user) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
 
   try {
+    const status = await getHireStatus(id)
+    if (status === null) {
+      return NextResponse.json({ message: 'Hire not found' }, { status: 404 })
+    }
+    if (status === 'active') {
+      // Deleting an active hire would cascade away its checkout records and
+      // silently mark deployed equipment as available. Return it first.
+      return NextResponse.json(
+        { message: 'Active hires cannot be deleted — return the hire first' },
+        { status: 409 }
+      )
+    }
     await deleteHire(id)
     return new Response(null, { status: 204 })
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : 'Unknown error'
-    return NextResponse.json({ message }, { status: 500 })
+    return serverError(e, 'DELETE /api/hires/[id]')
   }
 }

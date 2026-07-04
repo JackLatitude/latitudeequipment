@@ -3,6 +3,7 @@ import { updateItem, getItem } from '@/lib/db/items'
 import { getKit } from '@/lib/db/kits'
 import { assignItem } from '@/lib/db/assignments'
 import { NextResponse } from 'next/server'
+import { serverError, readJson, optionalNumber } from '@/lib/api/route-helpers'
 
 export async function PATCH(
   request: Request,
@@ -13,7 +14,8 @@ export async function PATCH(
   if (!user) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
 
   const { id } = await params
-  const body = await request.json()
+  const body = await readJson(request)
+  if (!body) return NextResponse.json({ message: 'Invalid JSON body' }, { status: 400 })
 
   try {
     // Handle kit assignment: when kit_id is provided and non-null, sync holder
@@ -34,18 +36,22 @@ export async function PATCH(
     }
 
     // Standard field update (no kit_id change)
+    const value = optionalNumber(body.value)
+    const weightKg = optionalNumber(body.weight_kg)
+    if (value === null || weightKg === null) {
+      return NextResponse.json({ message: 'Value and weight must be numbers' }, { status: 400 })
+    }
     const item = await updateItem(id, {
       name: body.name,
       serial_number: body.serial_number || undefined,
       category: body.category || undefined,
       notes: body.notes || undefined,
-      value: body.value ? parseFloat(body.value) : undefined,
+      value,
       country_of_origin: body.country_of_origin || undefined,
-      weight_kg: body.weight_kg ? parseFloat(body.weight_kg) : undefined,
+      weight_kg: weightKg,
     })
     return NextResponse.json(item)
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : 'Unknown error'
-    return NextResponse.json({ message }, { status: 500 })
+    return serverError(e, 'PATCH /api/items/[id]')
   }
 }

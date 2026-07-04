@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { checkinHireItem, getHireStatus } from '@/lib/db/hires'
 import { NextResponse } from 'next/server'
+import { serverError } from '@/lib/api/route-helpers'
 
 type Ctx = { params: Promise<{ id: string; itemId: string }> }
 
@@ -13,13 +14,15 @@ export async function POST(request: Request, { params }: Ctx) {
   const body = await request.json().catch(() => ({}))
   try {
     const status = await getHireStatus(id)
+    if (status === null) {
+      return NextResponse.json({ message: 'Hire not found' }, { status: 404 })
+    }
     if (status !== 'active') {
       return NextResponse.json({ message: 'Items can only be checked in on active hires' }, { status: 409 })
     }
     await checkinHireItem(id, itemId, body.condition || undefined)
     return NextResponse.json({ ok: true })
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : 'Unknown error'
-    return NextResponse.json({ message }, { status: 500 })
+    return serverError(e, 'POST /api/hires/[id]/items/[itemId]/checkin')
   }
 }

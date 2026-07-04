@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { deleteKit, updateKit } from '@/lib/db/kits'
 import { NextResponse } from 'next/server'
+import { serverError, readJson } from '@/lib/api/route-helpers'
 
 export async function PATCH(
   request: Request,
@@ -11,7 +12,8 @@ export async function PATCH(
   if (!user) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
 
   const { id } = await params
-  const body = await request.json()
+  const body = await readJson(request)
+  if (!body) return NextResponse.json({ message: 'Invalid JSON body' }, { status: 400 })
 
   try {
     const kit = await updateKit(id, {
@@ -20,8 +22,7 @@ export async function PATCH(
     })
     return NextResponse.json(kit)
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : 'Unknown error'
-    return NextResponse.json({ message }, { status: 500 })
+    return serverError(e, 'kits/[id]')
   }
 }
 
@@ -38,7 +39,6 @@ export async function DELETE(
     await deleteKit(id)
     return NextResponse.json({ ok: true })
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : 'Unknown error'
-    return NextResponse.json({ message }, { status: 500 })
+    return serverError(e, 'kits/[id]')
   }
 }

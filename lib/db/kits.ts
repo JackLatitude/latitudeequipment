@@ -48,7 +48,11 @@ export async function updateKit(id: string, data: Partial<CreateKitData>): Promi
 export async function deleteKit(id: string): Promise<void> {
   const supabase = await createClient()
   // Detach all items from kit first
-  await supabase.from('items').update({ kit_id: null }).eq('kit_id', id)
+  const { error: detachError } = await supabase
+    .from('items')
+    .update({ kit_id: null })
+    .eq('kit_id', id)
+  if (detachError) throw new Error(detachError.message)
   const { error } = await supabase.from('kits').delete().eq('id', id)
   if (error) throw new Error(error.message)
 }

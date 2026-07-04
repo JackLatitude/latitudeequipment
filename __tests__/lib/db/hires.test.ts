@@ -1,7 +1,8 @@
 import { getHires, checkoutHire, checkinHire, getActiveHireItemsByItemIds } from '@/lib/db/hires'
 
 const mockFrom = jest.fn()
-const mockSupabase = { from: mockFrom }
+const mockRpc = jest.fn()
+const mockSupabase = { from: mockFrom, rpc: mockRpc }
 
 jest.mock('@/lib/supabase/server', () => ({
   createClient: jest.fn(() => Promise.resolve(mockSupabase)),
@@ -26,65 +27,25 @@ describe('getHires', () => {
 describe('checkoutHire', () => {
   beforeEach(() => jest.clearAllMocks())
 
-  it('sets checked_out_at on all items then status to active', async () => {
-    const itemsUpdateMock = jest.fn()
-    const itemsUpdateEq = jest.fn().mockResolvedValue({ error: null })
-    itemsUpdateMock.mockReturnValue({ eq: itemsUpdateEq })
-
-    mockFrom.mockReturnValueOnce({
-      update: itemsUpdateMock,
-    })
-
-    const hireUpdateMock = jest.fn()
-    const hireUpdateEq = jest.fn().mockResolvedValue({ error: null })
-    hireUpdateMock.mockReturnValue({ eq: hireUpdateEq })
-
-    mockFrom.mockReturnValueOnce({
-      update: hireUpdateMock,
-    })
-
+  it('runs the atomic checkout_hire transaction', async () => {
+    mockRpc.mockResolvedValue({ error: null })
     await checkoutHire('h1')
+    expect(mockRpc).toHaveBeenCalledWith('checkout_hire', { p_hire_id: 'h1' })
+  })
 
-    expect(mockFrom).toHaveBeenNthCalledWith(1, 'hire_items')
-    expect(itemsUpdateMock).toHaveBeenCalledWith(expect.objectContaining({ checked_out_at: expect.any(String) }))
-    expect(itemsUpdateEq).toHaveBeenCalledWith('hire_id', 'h1')
-
-    expect(mockFrom).toHaveBeenNthCalledWith(2, 'hires')
-    expect(hireUpdateMock).toHaveBeenCalledWith({ status: 'active' })
-    expect(hireUpdateEq).toHaveBeenCalledWith('id', 'h1')
+  it('throws when the transaction fails', async () => {
+    mockRpc.mockResolvedValue({ error: { message: 'boom' } })
+    await expect(checkoutHire('h1')).rejects.toThrow('boom')
   })
 })
 
 describe('checkinHire', () => {
   beforeEach(() => jest.clearAllMocks())
 
-  it('checks in outstanding items then sets status to returned', async () => {
-    const isChain = jest.fn().mockResolvedValue({ error: null })
-    const eqChain = jest.fn().mockReturnValue({ is: isChain })
-    const itemsUpdateMock = jest.fn().mockReturnValue({ eq: eqChain })
-
-    mockFrom.mockReturnValueOnce({
-      update: itemsUpdateMock,
-    })
-
-    const hireUpdateMock = jest.fn()
-    const hireUpdateEq = jest.fn().mockResolvedValue({ error: null })
-    hireUpdateMock.mockReturnValue({ eq: hireUpdateEq })
-
-    mockFrom.mockReturnValueOnce({
-      update: hireUpdateMock,
-    })
-
+  it('runs the atomic checkin_hire transaction', async () => {
+    mockRpc.mockResolvedValue({ error: null })
     await checkinHire('h1')
-
-    expect(mockFrom).toHaveBeenNthCalledWith(1, 'hire_items')
-    expect(itemsUpdateMock).toHaveBeenCalledWith(expect.objectContaining({ checked_in_at: expect.any(String) }))
-    expect(eqChain).toHaveBeenCalledWith('hire_id', 'h1')
-    expect(isChain).toHaveBeenCalledWith('checked_in_at', null)
-
-    expect(mockFrom).toHaveBeenNthCalledWith(2, 'hires')
-    expect(hireUpdateMock).toHaveBeenCalledWith({ status: 'returned' })
-    expect(hireUpdateEq).toHaveBeenCalledWith('id', 'h1')
+    expect(mockRpc).toHaveBeenCalledWith('checkin_hire', { p_hire_id: 'h1' })
   })
 })
 

@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { removeHireItem, getHireStatus } from '@/lib/db/hires'
 import { NextResponse } from 'next/server'
+import { serverError } from '@/lib/api/route-helpers'
 
 type Ctx = { params: Promise<{ id: string; itemId: string }> }
 
@@ -12,13 +13,15 @@ export async function DELETE(request: Request, { params }: Ctx) {
 
   try {
     const status = await getHireStatus(id)
+    if (status === null) {
+      return NextResponse.json({ message: 'Hire not found' }, { status: 404 })
+    }
     if (status !== 'draft') {
       return NextResponse.json({ message: 'Items can only be removed from draft hires' }, { status: 409 })
     }
     await removeHireItem(id, itemId)
     return new Response(null, { status: 204 })
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : 'Unknown error'
-    return NextResponse.json({ message }, { status: 500 })
+    return serverError(e, 'DELETE /api/hires/[id]/items/[itemId]')
   }
 }

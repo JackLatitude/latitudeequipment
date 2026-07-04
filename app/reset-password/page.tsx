@@ -66,68 +66,92 @@ export default function ResetPasswordPage() {
       setError(error.message)
       setLoading(false)
     } else {
-      router.push('/equipment')
+      router.push('/dashboard')
     }
   }
 
-  const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
+  const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2.5 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
+  const labelClass = 'block text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-1.5'
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-brand-black">
-      <div className="w-full bg-brand-black border-t-[3px] border-brand-red flex items-center px-8 h-16 fixed top-0 left-0">
-        <Image src="/logos/logo_equipment_dark.png" alt="Latitude Equipment" width={123} height={44} priority />
+    <div className="min-h-screen flex flex-col items-center justify-center bg-brand-black px-6">
+
+      {/* Brand mark */}
+      <div className="flex flex-col items-center mb-12">
+        <Image
+          src="/logos/icon_o_mark.png"
+          alt="Latitude Equipment"
+          width={72}
+          height={70}
+          priority
+          className="mb-5"
+        />
+        <p
+          className="text-xs font-extralight tracking-[0.35em] uppercase text-white"
+          style={{ fontFamily: 'Metropolis, sans-serif' }}
+        >
+          Latitude Equipment
+        </p>
       </div>
-      <div className="w-full max-w-sm bg-brand-dark-surface rounded-lg border border-brand-rule-grey p-8 mt-16">
+
+      {/* Content */}
+      <div className="w-full max-w-xs">
+        <div className="border-t border-brand-rule-grey mb-8" />
+
         {expired ? (
-          <>
-            <h1 className="text-xl font-bold text-white mb-2">Link expired</h1>
-            <p className="text-sm text-brand-mid-grey mb-6">This reset link has expired or already been used. Request a new one.</p>
-            <Link href="/forgot-password" className="text-sm text-brand-red hover:opacity-80 transition-opacity">
+          <div>
+            <p className="text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-3" style={{ fontFamily: 'Metropolis, sans-serif' }}>
+              Link expired
+            </p>
+            <p className="text-sm text-brand-mid-grey mb-6">
+              This reset link has expired or already been used. Request a new one.
+            </p>
+            <Link href="/forgot-password" className="text-xs text-brand-mid-grey hover:text-white transition-colors">
               Request new link →
             </Link>
-          </>
+          </div>
         ) : !ready ? (
           <p className="text-sm text-brand-mid-grey">Verifying link…</p>
         ) : (
-          <>
-            <h1 className="text-xl font-bold text-white mb-2">Set new password</h1>
-            <p className="text-sm text-brand-mid-grey mb-6">Choose a new password for your account.</p>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-white mb-1">New password</label>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  autoFocus
-                  minLength={8}
-                  className={inputClass}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-white mb-1">Confirm password</label>
-                <input
-                  type="password"
-                  value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)}
-                  required
-                  minLength={8}
-                  className={inputClass}
-                />
-              </div>
-              {error && <p className="text-sm text-brand-red">{error}</p>}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-brand-red text-white rounded px-3 py-2 text-sm font-bold hover:opacity-90 disabled:opacity-50 transition-opacity"
-              >
-                {loading ? 'Saving…' : 'Set new password'}
-              </button>
-            </form>
-          </>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <p className="text-sm text-brand-mid-grey mb-5">
+                Choose a new password for your account.
+              </p>
+              <label className={labelClass}>New password</label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoFocus
+                minLength={8}
+                className={inputClass}
+              />
+            </div>
+            <div>
+              <label className={labelClass}>Confirm password</label>
+              <input
+                type="password"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                required
+                minLength={8}
+                className={inputClass}
+              />
+            </div>
+            {error && <p className="text-sm text-brand-red">{error}</p>}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-brand-red text-white rounded px-3 py-2.5 text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
+            >
+              {loading ? 'Saving…' : 'Set new password'}
+            </button>
+          </form>
         )}
       </div>
+
     </div>
   )
 }

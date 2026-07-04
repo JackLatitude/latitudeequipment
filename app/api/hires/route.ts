@@ -1,13 +1,15 @@
 import { createClient } from '@/lib/supabase/server'
 import { createHire } from '@/lib/db/hires'
 import { NextResponse } from 'next/server'
+import { serverError, readJson } from '@/lib/api/route-helpers'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
 
-  const body = await request.json()
+  const body = await readJson(request)
+  if (!body) return NextResponse.json({ message: 'Invalid JSON body' }, { status: 400 })
   if (!body.title || !body.client_id) {
     return NextResponse.json({ message: 'Title and client are required' }, { status: 400 })
   }
@@ -23,7 +25,6 @@ export async function POST(request: Request) {
     })
     return NextResponse.json(hire)
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : 'Unknown error'
-    return NextResponse.json({ message }, { status: 500 })
+    return serverError(e, 'POST /api/hires')
   }
 }

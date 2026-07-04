@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { duplicateKit } from '@/lib/db/kits'
 import { NextResponse } from 'next/server'
+import { serverError } from '@/lib/api/route-helpers'
 
 export async function POST(
   _: Request,
@@ -15,7 +16,6 @@ export async function POST(
     const kit = await duplicateKit(id, user.id)
     return NextResponse.json(kit)
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : 'Unknown error'
-    return NextResponse.json({ message }, { status: 500 })
+    return serverError(e, 'POST /api/kits/[id]/duplicate')
   }
 }

@@ -41,13 +41,18 @@ export async function getHiresByClient(clientId: string): Promise<Hire[]> {
 
 export async function createHire(data: CreateHireData): Promise<Hire> {
   const supabase = await createClient()
-  const { data: hire, error } = await supabase
-    .from('hires')
-    .insert(data)
-    .select(HIRE_SELECT)
-    .single()
-  if (error) throw new Error(error.message)
-  return hire as Hire
+  // The LAT-ref trigger computes max+1 without locking, so two simultaneous
+  // inserts can collide on the unique constraint — retry once on 23505.
+  for (let attempt = 0; ; attempt++) {
+    const { data: hire, error } = await supabase
+      .from('hires')
+      .insert(data)
+      .select(HIRE_SELECT)
+      .single()
+    if (!error) return hire as Hire
+    if (error.code === '23505' && attempt === 0) continue
+    throw new Error(error.message)
+  }
 }
 
 export async function updateHire(
@@ -87,16 +92,8 @@ export async function removeHireItem(hireId: string, itemId: string): Promise<vo
 
 export async function checkoutHire(hireId: string): Promise<void> {
   const supabase = await createClient()
-  const now = new Date().toISOString()
-  const { error: itemsError } = await supabase
-    .from('hire_items')
-    .update({ checked_out_at: now })
-    .eq('hire_id', hireId)
-  if (itemsError) throw new Error(itemsError.message)
-  const { error } = await supabase
-    .from('hires')
-    .update({ status: 'active' })
-    .eq('id', hireId)
+  // Single transaction: items + status together (migration 0004).
+  const { error } = await supabase.rpc('checkout_hire', { p_hire_id: hireId })
   if (error) throw new Error(error.message)
 }
 
@@ -118,17 +115,8 @@ export async function checkinHireItem(
 
 export async function checkinHire(hireId: string): Promise<void> {
   const supabase = await createClient()
-  const now = new Date().toISOString()
-  const { error: itemsError } = await supabase
-    .from('hire_items')
-    .update({ checked_in_at: now })
-    .eq('hire_id', hireId)
-    .is('checked_in_at', null)
-  if (itemsError) throw new Error(itemsError.message)
-  const { error } = await supabase
-    .from('hires')
-    .update({ status: 'returned' })
-    .eq('id', hireId)
+  // Single transaction: outstanding items + status together (migration 0004).
+  const { error } = await supabase.rpc('checkin_hire', { p_hire_id: hireId })
   if (error) throw new Error(error.message)
 }
 

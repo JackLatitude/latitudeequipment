@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { getItemsByIds } from '@/lib/db/items'
 import { NextResponse } from 'next/server'
+import { serverError, readJson } from '@/lib/api/route-helpers'
 import * as XLSX from 'xlsx'
 
 export async function POST(request: Request) {
@@ -8,9 +9,10 @@ export async function POST(request: Request) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
 
-  try {
-    const body = await request.json()
+  const body = await readJson(request)
+  if (!body) return NextResponse.json({ message: 'Invalid JSON body' }, { status: 400 })
 
+  try {
     if (!Array.isArray(body.itemIds)) {
       return NextResponse.json({ message: 'itemIds must be an array' }, { status: 400 })
     }
@@ -19,6 +21,9 @@ export async function POST(request: Request) {
 
     if (itemIds.length === 0) {
       return NextResponse.json({ message: 'No items selected' }, { status: 400 })
+    }
+    if (itemIds.length > 1000) {
+      return NextResponse.json({ message: 'Too many items selected (max 1000)' }, { status: 400 })
     }
 
     const items = await getItemsByIds(itemIds)
@@ -49,7 +54,6 @@ export async function POST(request: Request) {
       },
     })
   } catch (e: unknown) {
-    const message = e instanceof Error ? e.message : 'Unknown error'
-    return NextResponse.json({ message }, { status: 500 })
+    return serverError(e, 'POST /api/carnet/export')
   }
 }
