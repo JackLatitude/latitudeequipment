@@ -47,6 +47,16 @@ export type ItemFilters = {
   search?: string
 }
 
+export type ItemTemplate = {
+  id: string
+  name: string
+  category: string | null
+  value: number | null
+  country_of_origin: string | null
+  weight_kg: number | null
+  notes: string | null
+}
+
 export type CreateItemData = {
   name: string
   serial_number?: string

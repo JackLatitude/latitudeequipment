@@ -51,12 +51,20 @@ export default async function ItemDetailPage({ params }: Props) {
 
       <div className="flex items-start justify-between mb-6">
         <h1 className="text-2xl font-bold text-white">{item.name}</h1>
-        <Link
-          href={`/equipment/${item.id}/edit`}
-          className="text-sm text-white border border-brand-rule-grey hover:border-white rounded px-3 py-1.5 transition-colors flex-shrink-0 ml-4"
-        >
-          Edit
-        </Link>
+        <div className="flex gap-2 flex-shrink-0 ml-4">
+          <Link
+            href={`/equipment/new?from=${item.id}`}
+            className="text-sm text-white border border-brand-rule-grey hover:border-white rounded px-3 py-1.5 transition-colors whitespace-nowrap"
+          >
+            Add another
+          </Link>
+          <Link
+            href={`/equipment/${item.id}/edit`}
+            className="text-sm text-white border border-brand-rule-grey hover:border-white rounded px-3 py-1.5 transition-colors"
+          >
+            Edit
+          </Link>
+        </div>
       </div>
 
       {activeHireItem?.hire && (

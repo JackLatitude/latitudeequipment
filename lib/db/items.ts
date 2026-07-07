@@ -1,5 +1,27 @@
 import { createClient } from '@/lib/supabase/server'
-import type { Item, ItemFilters, CreateItemData } from '@/lib/types'
+import type { Item, ItemFilters, CreateItemData, ItemTemplate } from '@/lib/types'
+
+// Distinct items (by name) usable as a fill-in template when adding a new
+// unit of a model already in stock. Serial is intentionally omitted.
+export async function getItemTemplates(): Promise<ItemTemplate[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('items')
+    .select('id, name, category, value, country_of_origin, weight_kg, notes')
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false })
+  if (error) throw new Error(error.message)
+
+  const seen = new Set<string>()
+  const templates: ItemTemplate[] = []
+  for (const row of (data ?? []) as ItemTemplate[]) {
+    const key = row.name.trim().toLowerCase()
+    if (seen.has(key)) continue
+    seen.add(key)
+    templates.push(row)
+  }
+  return templates
+}
 
 export async function getItems(filters?: ItemFilters): Promise<Item[]> {
   const supabase = await createClient()
