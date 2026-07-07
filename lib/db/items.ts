@@ -75,6 +75,21 @@ export async function updateItem(id: string, data: Partial<CreateItemData>): Pro
   return item as Item
 }
 
+export async function getItemBySerial(serial: string): Promise<Item | null> {
+  const supabase = await createClient()
+  // Case-insensitive exact match (no wildcards). Serials are alphanumeric;
+  // supabase-js URL-encodes the value, so this is injection-safe.
+  const { data, error } = await supabase
+    .from('items')
+    .select('*, current_holder:profiles(*), kit:kits(*)')
+    .ilike('serial_number', serial.trim())
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false })
+    .limit(1)
+  if (error) throw new Error(error.message)
+  return (data?.[0] as Item) ?? null
+}
+
 export async function getItemsByIds(ids: string[]): Promise<Item[]> {
   if (ids.length === 0) return []
   const supabase = await createClient()
