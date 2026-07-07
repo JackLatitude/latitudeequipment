@@ -41,6 +41,21 @@ export async function assignKit(
   if (error) throw new Error(error.message)
 }
 
+export async function addItemsToKit(
+  kitId: string,
+  itemIds: string[],
+  assignedById: string
+): Promise<void> {
+  if (itemIds.length === 0) return
+  const supabase = await createClient()
+  const { error } = await supabase.rpc('add_items_to_kit', {
+    p_kit_id: kitId,
+    p_item_ids: itemIds,
+    p_assigned_by: assignedById,
+  })
+  if (error) throw new Error(error.message)
+}
+
 export async function getItemHistory(itemId: string): Promise<AssignmentHistory[]> {
   const supabase = await createClient()
   const { data, error } = await supabase

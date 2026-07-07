@@ -1,13 +1,14 @@
 import Link from 'next/link'
 import { getItemTemplates, getItem } from '@/lib/db/items'
+import { getKits } from '@/lib/db/kits'
 import { NewItemForm } from './_components/new-item-form'
 import type { ItemTemplate } from '@/lib/types'
 
-type Props = { searchParams: Promise<{ serial?: string; from?: string }> }
+type Props = { searchParams: Promise<{ serial?: string; from?: string; kit?: string }> }
 
 export default async function NewItemPage({ searchParams }: Props) {
-  const { serial, from } = await searchParams
-  const templates = await getItemTemplates()
+  const { serial, from, kit } = await searchParams
+  const [templates, kits] = await Promise.all([getItemTemplates(), getKits()])
 
   let initialTemplate: ItemTemplate | null = null
   if (from) {
@@ -31,7 +32,13 @@ export default async function NewItemPage({ searchParams }: Props) {
         <Link href="/equipment" className="text-sm text-brand-mid-grey hover:text-white">← Equipment</Link>
       </div>
       <h1 className="text-2xl font-bold text-white mb-6">Add item</h1>
-      <NewItemForm templates={templates} initialSerial={serial ?? ''} initialTemplate={initialTemplate} />
+      <NewItemForm
+        templates={templates}
+        kits={kits}
+        initialSerial={serial ?? ''}
+        initialTemplate={initialTemplate}
+        initialKitId={kit ?? ''}
+      />
     </div>
   )
 }

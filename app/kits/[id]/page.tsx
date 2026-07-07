@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { getKit } from '@/lib/db/kits'
 import { getItems, getLooseItems } from '@/lib/db/items'
 import { getProfiles } from '@/lib/db/users'
-import { assignKit, assignItem } from '@/lib/db/assignments'
+import { assignKit, assignItem, addItemsToKit } from '@/lib/db/assignments'
 import { createClient } from '@/lib/supabase/server'
 import { KitAssignControl } from '@/components/kits/kit-assign-control'
 import { AssignControl } from '@/components/equipment/assign-control'
@@ -45,16 +45,12 @@ export default async function KitDetailPage({ params }: Props) {
     revalidatePath('/equipment')
   }
 
-  async function handleAddItem(itemId: string) {
+  async function handleAddItems(itemIds: string[]) {
     'use server'
-    await assignItem(itemId, kit!.current_holder_id, user!.id, `Added to kit: ${kit!.name}`)
-    // Update kit_id on the item via direct DB update
-    const { createClient: makeClient } = await import('@/lib/supabase/server')
-    const db = await makeClient()
-    const { error } = await db.from('items').update({ kit_id: kit!.id }).eq('id', itemId)
-    if (error) throw new Error(error.message)
+    await addItemsToKit(kit!.id, itemIds, user!.id)
     revalidatePath(`/kits/${id}`)
     revalidatePath('/equipment')
+    revalidatePath('/kits')
   }
 
   return (
@@ -100,8 +96,8 @@ export default async function KitDetailPage({ params }: Props) {
 
         {looseItems.length > 0 && (
           <div className="mb-4">
-            <p className="text-xs text-brand-mid-grey mb-2">Add a loose item to this kit:</p>
-            <AddItemControl kitId={kit.id} looseItems={looseItems} onAdd={handleAddItem} />
+            <p className="text-xs text-brand-mid-grey mb-2">Add loose items to this kit:</p>
+            <AddItemControl looseItems={looseItems} onAdd={handleAddItems} />
           </div>
         )}
 

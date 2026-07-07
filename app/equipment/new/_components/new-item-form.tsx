@@ -6,18 +6,20 @@ import Link from 'next/link'
 import { Field } from '@/components/ui/field'
 import { SerialInput } from '@/components/equipment/serial-input'
 import { ITEM_CATEGORIES } from '@/lib/constants'
-import type { ItemTemplate } from '@/lib/types'
+import type { ItemTemplate, Kit } from '@/lib/types'
 
 const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
 const labelClass = 'block text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-1.5'
 
 type Props = {
   templates: ItemTemplate[]
+  kits: Kit[]
   initialSerial: string
   initialTemplate: ItemTemplate | null
+  initialKitId: string
 }
 
-export function NewItemForm({ templates, initialSerial, initialTemplate }: Props) {
+export function NewItemForm({ templates, kits, initialSerial, initialTemplate, initialKitId }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -25,6 +27,8 @@ export function NewItemForm({ templates, initialSerial, initialTemplate }: Props
   const [fieldsKey, setFieldsKey] = useState(0) // bump to remount fields with new defaults
   const [search, setSearch] = useState('')
   const [pickerOpen, setPickerOpen] = useState(false)
+  // Controlled so it survives the fields remount when a template is applied.
+  const [kitId, setKitId] = useState(initialKitId)
 
   function applyTemplate(t: ItemTemplate | null) {
     setTemplate(t)
@@ -129,6 +133,19 @@ export function NewItemForm({ templates, initialSerial, initialTemplate }: Props
             <option value="">Select a category</option>
             {ITEM_CATEGORIES.map((c) => (
               <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Kit">
+          <select
+            name="kit_id"
+            value={kitId}
+            onChange={(e) => setKitId(e.target.value)}
+            className={inputClass}
+          >
+            <option value="">None (loose item)</option>
+            {kits.map((k) => (
+              <option key={k.id} value={k.id}>{k.name}</option>
             ))}
           </select>
         </Field>
