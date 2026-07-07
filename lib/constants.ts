@@ -6,5 +6,6 @@ export const ITEM_CATEGORIES = [
   'Grip',
   'Lighting',
   'Monitoring',
+  'Memory',
   'Accessories',
 ] as const
