@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Field } from '@/components/ui/field'
+import { SerialInput } from '@/components/equipment/serial-input'
 import { ITEM_CATEGORIES } from '@/lib/constants'
 
 export default function NewItemPage() {
@@ -45,7 +46,7 @@ export default function NewItemPage() {
           <input name="name" required className={inputClass} />
         </Field>
         <Field label="Serial number">
-          <input name="serial_number" className={inputClass} />
+          <SerialInput name="serial_number" inputClass={inputClass} />
         </Field>
         <Field label="Category">
           <select name="category" className={inputClass}>

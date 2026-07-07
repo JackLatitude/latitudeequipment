@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Field } from '@/components/ui/field'
+import { SerialInput } from '@/components/equipment/serial-input'
 import type { Item, Kit } from '@/lib/types'
 import { ITEM_CATEGORIES } from '@/lib/constants'
 
@@ -72,7 +73,7 @@ export function EditItemForm({ item, kits }: Props) {
         <input name="name" required defaultValue={item.name} className={inputClass} />
       </Field>
       <Field label="Serial number">
-        <input name="serial_number" defaultValue={item.serial_number ?? ''} className={inputClass} />
+        <SerialInput name="serial_number" defaultValue={item.serial_number ?? ''} inputClass={inputClass} />
       </Field>
       <Field label="Category">
         <select name="category" defaultValue={item.category ?? ''} className={inputClass}>
