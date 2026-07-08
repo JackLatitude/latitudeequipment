@@ -112,6 +112,23 @@ export async function getItemBySerial(serial: string): Promise<Item | null> {
   return (data?.[0] as Item) ?? null
 }
 
+// Most recently added item whose serial shares the given prefix (e.g. the DJI
+// 4-char type code). Returns a template so the caller can pre-fill a new unit.
+export async function getItemBySerialPrefix(prefix: string): Promise<ItemTemplate | null> {
+  const clean = prefix.replace(/[%_\\]/g, '')
+  if (clean.length < 4) return null
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('items')
+    .select('id, name, category, value, country_of_origin, weight_kg, notes')
+    .ilike('serial_number', `${clean}%`)
+    .is('deleted_at', null)
+    .order('created_at', { ascending: false })
+    .limit(1)
+  if (error) throw new Error(error.message)
+  return (data?.[0] as ItemTemplate) ?? null
+}
+
 export async function getItemsByIds(ids: string[]): Promise<Item[]> {
   if (ids.length === 0) return []
   const supabase = await createClient()

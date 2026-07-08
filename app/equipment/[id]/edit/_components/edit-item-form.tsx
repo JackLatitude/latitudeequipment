@@ -14,6 +14,7 @@ export function EditItemForm({ item, kits }: Props) {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [serial, setSerial] = useState(item.serial_number ?? '')
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -73,7 +74,7 @@ export function EditItemForm({ item, kits }: Props) {
         <input name="name" required defaultValue={item.name} className={inputClass} />
       </Field>
       <Field label="Serial number">
-        <SerialInput name="serial_number" defaultValue={item.serial_number ?? ''} inputClass={inputClass} />
+        <SerialInput name="serial_number" value={serial} onChange={setSerial} inputClass={inputClass} />
       </Field>
       <Field label="Category">
         <select name="category" defaultValue={item.category ?? ''} className={inputClass}>

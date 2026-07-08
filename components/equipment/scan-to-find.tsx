@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
+import type { ItemTemplate } from '@/lib/types'
 
 const SerialScanner = dynamic(() => import('./serial-scanner'), { ssr: false })
 
@@ -19,22 +20,36 @@ function ScanIcon() {
   )
 }
 
+type Suggestion = { serial: string; item: ItemTemplate }
+
 export function ScanToFind() {
   const router = useRouter()
   const [scanning, setScanning] = useState(false)
   const [looking, setLooking] = useState(false)
   const [notFound, setNotFound] = useState<string | null>(null)
+  const [suggestion, setSuggestion] = useState<Suggestion | null>(null)
+
+  function reset() {
+    setNotFound(null)
+    setSuggestion(null)
+  }
 
   async function handleDetected(serial: string) {
     setScanning(false)
-    setNotFound(null)
+    reset()
     setLooking(true)
     try {
       const res = await fetch(`/api/items/lookup?serial=${encodeURIComponent(serial)}`)
       if (res.ok) {
-        const { id } = await res.json()
-        router.push(`/equipment/${id}`)
-        return
+        const data = await res.json()
+        if (data.exact) {
+          router.push(`/equipment/${data.exact.id}`)
+          return
+        }
+        if (data.suggestion) {
+          setSuggestion({ serial, item: data.suggestion })
+          return
+        }
       }
       setNotFound(serial)
     } catch {
@@ -44,12 +59,15 @@ export function ScanToFind() {
     }
   }
 
+  const toastClass =
+    'fixed left-1/2 -translate-x-1/2 z-40 bottom-24 lg:bottom-6 w-[calc(100%-2rem)] max-w-sm bg-brand-dark-surface border border-brand-rule-grey rounded-lg px-4 py-3 shadow-lg'
+
   return (
     <>
       <button
         type="button"
         onClick={() => {
-          setNotFound(null)
+          reset()
           setScanning(true)
         }}
         disabled={looking}
@@ -59,11 +77,40 @@ export function ScanToFind() {
         {looking ? 'Looking up…' : 'Scan'}
       </button>
 
+      {suggestion && (
+        <div role="status" className={toastClass}>
+          <div className="flex items-start justify-between gap-3">
+            <p className="text-sm text-white">
+              Serial not found. Is this a <span className="font-medium">{suggestion.item.name}</span>?
+            </p>
+            <button
+              onClick={() => setSuggestion(null)}
+              aria-label="Dismiss"
+              className="text-brand-mid-grey hover:text-white flex-shrink-0 -mt-0.5 text-lg leading-none"
+            >
+              ×
+            </button>
+          </div>
+          <p className="text-xs text-brand-mid-grey break-all mt-0.5">{suggestion.serial}</p>
+          <div className="flex gap-4 mt-2">
+            <Link
+              href={`/equipment/new?from=${suggestion.item.id}&serial=${encodeURIComponent(suggestion.serial)}`}
+              className="text-sm font-medium text-brand-red hover:opacity-80"
+            >
+              Yes, add one →
+            </Link>
+            <Link
+              href={`/equipment/new?serial=${encodeURIComponent(suggestion.serial)}`}
+              className="text-sm text-brand-mid-grey hover:text-white transition-colors"
+            >
+              No, different item →
+            </Link>
+          </div>
+        </div>
+      )}
+
       {notFound && (
-        <div
-          role="status"
-          className="fixed left-1/2 -translate-x-1/2 z-40 bottom-24 lg:bottom-6 w-[calc(100%-2rem)] max-w-sm bg-brand-dark-surface border border-brand-rule-grey rounded-lg px-4 py-3 shadow-lg"
-        >
+        <div role="status" className={toastClass}>
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
               <p className="text-sm text-white">Serial not found</p>

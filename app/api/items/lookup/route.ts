@@ -1,5 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
-import { getItemBySerial } from '@/lib/db/items'
+import { getItemBySerial, getItemBySerialPrefix } from '@/lib/db/items'
 import { NextResponse } from 'next/server'
 import { serverError } from '@/lib/api/route-helpers'
 
@@ -14,9 +14,13 @@ export async function GET(request: Request) {
   }
 
   try {
-    const item = await getItemBySerial(serial)
-    if (!item) return NextResponse.json({ message: 'Not found' }, { status: 404 })
-    return NextResponse.json({ id: item.id })
+    const exactItem = await getItemBySerial(serial)
+    if (exactItem) {
+      return NextResponse.json({ exact: { id: exactItem.id }, suggestion: null })
+    }
+    // No exact hit — offer the closest model by DJI-style 4-char prefix.
+    const suggestion = serial.length >= 4 ? await getItemBySerialPrefix(serial.slice(0, 4)) : null
+    return NextResponse.json({ exact: null, suggestion })
   } catch (e: unknown) {
     return serverError(e, 'GET /api/items/lookup')
   }

@@ -8,7 +8,8 @@ const SerialScanner = dynamic(() => import('./serial-scanner'), { ssr: false })
 
 type Props = {
   name: string
-  defaultValue?: string
+  value: string
+  onChange: (value: string) => void
   inputClass: string
 }
 
@@ -24,8 +25,7 @@ function ScanIcon() {
   )
 }
 
-export function SerialInput({ name, defaultValue, inputClass }: Props) {
-  const [value, setValue] = useState(defaultValue ?? '')
+export function SerialInput({ name, value, onChange, inputClass }: Props) {
   const [scanning, setScanning] = useState(false)
 
   return (
@@ -33,7 +33,7 @@ export function SerialInput({ name, defaultValue, inputClass }: Props) {
       <input
         name={name}
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={(e) => onChange(e.target.value)}
         className={inputClass}
         autoComplete="off"
       />
@@ -48,7 +48,7 @@ export function SerialInput({ name, defaultValue, inputClass }: Props) {
       {scanning && (
         <SerialScanner
           onDetected={(text) => {
-            setValue(text)
+            onChange(text)
             setScanning(false)
           }}
           onClose={() => setScanning(false)}
