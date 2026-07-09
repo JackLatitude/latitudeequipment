@@ -4,6 +4,7 @@ import { getKit } from '@/lib/db/kits'
 import { assignItem } from '@/lib/db/assignments'
 import { NextResponse } from 'next/server'
 import { serverError, readJson, optionalNumber } from '@/lib/api/route-helpers'
+import { normalizeOwner } from '@/lib/constants'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -34,6 +35,7 @@ export async function POST(request: Request) {
       value,
       country_of_origin: body.country_of_origin || undefined,
       weight_kg: weightKg,
+      owner: normalizeOwner(body.owner),
     })
 
     if (kit) {

@@ -4,6 +4,7 @@ import { getKit } from '@/lib/db/kits'
 import { assignItem } from '@/lib/db/assignments'
 import { NextResponse } from 'next/server'
 import { serverError, readJson, optionalNumber } from '@/lib/api/route-helpers'
+import { normalizeOwner } from '@/lib/constants'
 
 export async function PATCH(
   request: Request,
@@ -49,6 +50,7 @@ export async function PATCH(
       value,
       country_of_origin: body.country_of_origin || undefined,
       weight_kg: weightKg,
+      ...(body.owner !== undefined ? { owner: normalizeOwner(body.owner) } : {}),
     })
     return NextResponse.json(item)
   } catch (e: unknown) {
