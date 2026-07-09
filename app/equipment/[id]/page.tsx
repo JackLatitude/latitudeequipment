@@ -92,6 +92,7 @@ export default async function ItemDetailPage({ params }: Props) {
 
       <dl className="grid grid-cols-2 gap-x-6 gap-y-5 mb-8">
         {[
+          ['Owner', item.owner],
           ['Serial number', item.serial_number ?? '—'],
           ['Category', item.category ?? '—'],
           ['Kit', item.kit?.name ?? '—'],

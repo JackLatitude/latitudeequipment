@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import type { Item, Profile } from '@/lib/types'
+import { ITEM_OWNERS } from '@/lib/constants'
 
 type Props = {
   items: Item[]
@@ -125,6 +126,11 @@ export function ItemTable({ items, profiles, onHireItemIds, search, holderId, on
                                   On hire
                                 </span>
                               )}
+                              {item.owner !== ITEM_OWNERS[0] && (
+                                <span className="text-[10px] text-brand-mid-grey bg-white/5 border border-brand-rule-grey rounded-full px-1.5 py-0.5 ml-2 whitespace-nowrap flex-shrink-0">
+                                  {item.owner}
+                                </span>
+                              )}
                             </div>
                             <p className="text-sm text-brand-mid-grey mt-0.5">
                               {item.serial_number ? item.serial_number : '—'}
@@ -161,6 +167,11 @@ export function ItemTable({ items, profiles, onHireItemIds, search, holderId, on
                               {onHire.has(item.id) && (
                                 <span className="text-[10px] text-brand-red bg-brand-red/10 border border-brand-red/30 rounded-full px-1.5 py-0.5 ml-2 align-middle whitespace-nowrap">
                                   On hire
+                                </span>
+                              )}
+                              {item.owner !== ITEM_OWNERS[0] && (
+                                <span className="text-[10px] text-brand-mid-grey bg-white/5 border border-brand-rule-grey rounded-full px-1.5 py-0.5 ml-2 align-middle whitespace-nowrap">
+                                  {item.owner}
                                 </span>
                               )}
                             </td>
