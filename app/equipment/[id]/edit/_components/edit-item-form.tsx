@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { Field } from '@/components/ui/field'
 import { SerialInput } from '@/components/equipment/serial-input'
 import type { Item, Kit } from '@/lib/types'
-import { ITEM_CATEGORIES } from '@/lib/constants'
+import { ITEM_CATEGORIES, ITEM_OWNERS } from '@/lib/constants'
 
 type Props = { item: Item; kits: Kit[] }
 
@@ -53,6 +53,7 @@ export function EditItemForm({ item, kits }: Props) {
         value: raw.value,
         country_of_origin: raw.country_of_origin,
         weight_kg: raw.weight_kg,
+        owner: raw.owner,
       }),
     })
 
@@ -81,6 +82,13 @@ export function EditItemForm({ item, kits }: Props) {
           <option value="">Select a category</option>
           {ITEM_CATEGORIES.map((c) => (
             <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
+      </Field>
+      <Field label="Owner">
+        <select name="owner" defaultValue={item.owner} className={inputClass}>
+          {ITEM_OWNERS.map((o) => (
+            <option key={o} value={o}>{o}</option>
           ))}
         </select>
       </Field>

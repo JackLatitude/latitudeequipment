@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Field } from '@/components/ui/field'
 import { SerialInput } from '@/components/equipment/serial-input'
-import { ITEM_CATEGORIES } from '@/lib/constants'
+import { ITEM_CATEGORIES, ITEM_OWNERS } from '@/lib/constants'
 import type { ItemTemplate, Kit } from '@/lib/types'
 
 const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
@@ -48,6 +48,7 @@ export function NewItemForm({ templates, kits, initialSerial, initialTemplate, i
   const [fields, setFields] = useState<Fields>(() => fieldsFromTemplate(initialTemplate))
   const [serial, setSerial] = useState(initialSerial)
   const [kitId, setKitId] = useState(initialKitId)
+  const [owner, setOwner] = useState<string>(ITEM_OWNERS[0])
 
   // Copy-from picker
   const [search, setSearch] = useState('')
@@ -121,6 +122,7 @@ export function NewItemForm({ templates, kits, initialSerial, initialTemplate, i
         country_of_origin: fields.country,
         weight_kg: fields.weight,
         notes: fields.notes,
+        owner,
         kit_id: kitId,
       }),
     })
@@ -239,6 +241,14 @@ export function NewItemForm({ templates, kits, initialSerial, initialTemplate, i
           <option value="">Select a category</option>
           {ITEM_CATEGORIES.map((c) => (
             <option key={c} value={c}>{c}</option>
+          ))}
+        </select>
+      </Field>
+
+      <Field label="Owner">
+        <select value={owner} onChange={(e) => setOwner(e.target.value)} className={inputClass}>
+          {ITEM_OWNERS.map((o) => (
+            <option key={o} value={o}>{o}</option>
           ))}
         </select>
       </Field>
