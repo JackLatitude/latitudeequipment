@@ -27,6 +27,7 @@ export type Item = {
   value: number | null
   country_of_origin: string | null
   weight_kg: number | null
+  owner: string
   deleted_at: string | null
   created_at: string
 }
@@ -67,6 +68,7 @@ export type CreateItemData = {
   value?: number
   country_of_origin?: string
   weight_kg?: number
+  owner?: string
 }
 
 export type CreateKitData = {
