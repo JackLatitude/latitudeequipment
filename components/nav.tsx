@@ -41,6 +41,7 @@ export function Nav({ displayName }: Props) {
         </Link>
         <Link href="/dashboard" className={linkClass('/dashboard')}>Dashboard</Link>
         <Link href="/equipment" className={linkClass('/equipment')}>Equipment</Link>
+        <Link href="/firmware" className={linkClass('/firmware')}>Firmware</Link>
         <Link href="/kits" className={linkClass('/kits')}>Kits</Link>
         <Link href="/hires" className={linkClass('/hires')}>Hires</Link>
         <Link href="/carnet" className={linkClass('/carnet')}>Carnet</Link>

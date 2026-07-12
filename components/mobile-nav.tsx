@@ -24,6 +24,16 @@ function EquipmentIcon({ active }: { active: boolean }) {
   )
 }
 
+function FirmwareIcon({ active }: { active: boolean }) {
+  const c = active ? '#ffffff' : '#888888'
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="7" y="7" width="10" height="10" rx="1" />
+      <path d="M9 2v3M15 2v3M9 19v3M15 19v3M2 9h3M2 15h3M19 9h3M19 15h3" />
+    </svg>
+  )
+}
+
 function KitsIcon({ active }: { active: boolean }) {
   const c = active ? '#ffffff' : '#888888'
   return (
@@ -62,6 +72,7 @@ export function MobileNav() {
   const tabs = [
     { href: '/dashboard', label: 'Home', Icon: HomeIcon },
     { href: '/equipment', label: 'Equipment', Icon: EquipmentIcon },
+    { href: '/firmware', label: 'Firmware', Icon: FirmwareIcon },
     { href: '/kits', label: 'Kits', Icon: KitsIcon },
     { href: '/hires', label: 'Hires', Icon: HiresIcon },
     { href: '/settings', label: 'Settings', Icon: SettingsIcon },
