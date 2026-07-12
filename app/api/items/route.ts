@@ -36,6 +36,7 @@ export async function POST(request: Request) {
       country_of_origin: body.country_of_origin || undefined,
       weight_kg: weightKg,
       owner: normalizeOwner(body.owner),
+      firmware_version: body.firmware_version || undefined,
     })
 
     if (kit) {

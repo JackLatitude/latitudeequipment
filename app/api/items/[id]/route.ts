@@ -51,6 +51,7 @@ export async function PATCH(
       country_of_origin: body.country_of_origin || undefined,
       weight_kg: weightKg,
       ...(body.owner !== undefined ? { owner: normalizeOwner(body.owner) } : {}),
+      firmware_version: body.firmware_version || undefined,
     })
     return NextResponse.json(item)
   } catch (e: unknown) {
