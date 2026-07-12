@@ -12,6 +12,8 @@ export const ITEM_CATEGORIES = [
 
 export const ITEM_OWNERS = ['Latitude Equipment', 'Jack', 'Matt', 'Tom'] as const
 
+export const FIRMWARE_CATEGORIES = ['Cameras', 'Monitoring', 'Drones'] as const
+
 export type ItemOwner = (typeof ITEM_OWNERS)[number]
 
 /**

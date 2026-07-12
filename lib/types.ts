@@ -28,6 +28,7 @@ export type Item = {
   country_of_origin: string | null
   weight_kg: number | null
   owner: string
+  firmware_version: string | null
   deleted_at: string | null
   created_at: string
 }
@@ -69,6 +70,7 @@ export type CreateItemData = {
   country_of_origin?: string
   weight_kg?: number
   owner?: string
+  firmware_version?: string
 }
 
 export type CreateKitData = {
@@ -136,4 +138,44 @@ export type CreateHireData = {
   notes?: string
   latitude_contact_id?: string | null
   created_by_id: string
+}
+
+export type FirmwareTarget = {
+  id: string
+  model: string
+  manufacturer: string | null
+  latest_version: string | null
+  source_url: string | null
+  last_checked_at: string | null
+  created_at: string
+}
+
+export type UpsertFirmwareTargetData = {
+  model: string
+  manufacturer?: string
+  latest_version?: string
+  source_url?: string
+}
+
+export type FirmwareItemRow = {
+  id: string
+  name: string
+  serial_number: string | null
+  firmware_version: string | null
+}
+
+export type FirmwareUnit = {
+  id: string
+  serial_number: string | null
+  firmware_version: string | null
+  outdated: boolean
+}
+
+export type FirmwareModel = {
+  model: string
+  manufacturer: string | null
+  latest_version: string | null
+  source_url: string | null
+  last_checked_at: string | null
+  units: FirmwareUnit[]
 }
