@@ -54,6 +54,7 @@ export function EditItemForm({ item, kits }: Props) {
         country_of_origin: raw.country_of_origin,
         weight_kg: raw.weight_kg,
         owner: raw.owner,
+        firmware_version: raw.firmware_version,
       }),
     })
 
@@ -108,6 +109,9 @@ export function EditItemForm({ item, kits }: Props) {
       </Field>
       <Field label="Weight (kg)">
         <input name="weight_kg" type="number" step="0.01" min="0" defaultValue={item.weight_kg ?? ''} className={inputClass} />
+      </Field>
+      <Field label="Firmware version">
+        <input name="firmware_version" defaultValue={item.firmware_version ?? ''} placeholder="e.g. 01.00.0500" className={inputClass} />
       </Field>
       <Field label="Notes">
         <textarea name="notes" rows={3} defaultValue={item.notes ?? ''} className={inputClass} />

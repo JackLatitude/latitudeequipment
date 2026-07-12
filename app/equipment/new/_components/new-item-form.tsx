@@ -49,6 +49,7 @@ export function NewItemForm({ templates, kits, initialSerial, initialTemplate, i
   const [serial, setSerial] = useState(initialSerial)
   const [kitId, setKitId] = useState(initialKitId)
   const [owner, setOwner] = useState<string>(ITEM_OWNERS[0])
+  const [firmwareVersion, setFirmwareVersion] = useState('')
 
   // Copy-from picker
   const [search, setSearch] = useState('')
@@ -123,6 +124,7 @@ export function NewItemForm({ templates, kits, initialSerial, initialTemplate, i
         weight_kg: fields.weight,
         notes: fields.notes,
         owner,
+        firmware_version: firmwareVersion,
         kit_id: kitId,
       }),
     })
@@ -272,6 +274,10 @@ export function NewItemForm({ templates, kits, initialSerial, initialTemplate, i
 
       <Field label="Weight (kg)">
         <input type="number" step="0.01" min="0" value={fields.weight} onChange={(e) => setField('weight', e.target.value)} className={inputClass} />
+      </Field>
+
+      <Field label="Firmware version">
+        <input value={firmwareVersion} onChange={(e) => setFirmwareVersion(e.target.value)} placeholder="e.g. 01.00.0500" className={inputClass} />
       </Field>
 
       <Field label="Notes">

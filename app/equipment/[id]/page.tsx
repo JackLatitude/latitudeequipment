@@ -99,6 +99,7 @@ export default async function ItemDetailPage({ params }: Props) {
           ['Value', item.value != null ? `£${item.value.toLocaleString()}` : '—'],
           ['Country of origin', item.country_of_origin ?? '—'],
           ['Weight', item.weight_kg != null ? `${item.weight_kg} kg` : '—'],
+          ['Firmware version', item.firmware_version ?? '—'],
         ].map(([label, value]) => (
           <div key={label}>
             <dt className="text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-0.5">{label}</dt>
