@@ -19,22 +19,27 @@ export function FirmwareModelCard({ model }: { model: FirmwareModel }) {
   async function save() {
     setSaving(true)
     setError(null)
-    const res = await fetch('/api/firmware-targets', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: model.model,
-        manufacturer,
-        latest_version: latest,
-        source_url: source,
-      }),
-    })
-    if (res.ok) {
-      setEditing(false)
-      router.refresh()
-    } else {
-      const { message } = await res.json()
-      setError(message)
+    try {
+      const res = await fetch('/api/firmware-targets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: model.model,
+          manufacturer,
+          latest_version: latest,
+          source_url: source,
+        }),
+      })
+      if (res.ok) {
+        setEditing(false)
+        router.refresh()
+        return
+      }
+      const body = await res.json().catch(() => null)
+      setError(body?.message ?? 'Could not save. Please try again.')
+      setSaving(false)
+    } catch {
+      setError('Could not save. Please try again.')
       setSaving(false)
     }
   }
