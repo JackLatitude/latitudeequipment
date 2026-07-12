@@ -3,17 +3,20 @@ import { getItems } from '@/lib/db/items'
 import { getKits } from '@/lib/db/kits'
 import { getHires } from '@/lib/db/hires'
 import { getClients } from '@/lib/db/clients'
+import { getOutdatedFirmwareCount } from '@/lib/db/firmware'
 import { StatCard } from './_components/stat-card'
 import { HireCard } from '../hires/_components/hire-card'
+import { FirmwareAlertBanner } from './_components/firmware-alert-banner'
 
 const labelClass = 'text-xs font-extralight uppercase tracking-wider text-brand-mid-grey'
 
 export default async function DashboardPage() {
-  const [items, kits, hires, clients] = await Promise.all([
+  const [items, kits, hires, clients, outdatedFirmwareCount] = await Promise.all([
     getItems(),
     getKits(),
     getHires(),
     getClients(),
+    getOutdatedFirmwareCount(),
   ])
 
   const activeHires = hires.filter((h) => h.status === 'active')
@@ -62,6 +65,7 @@ export default async function DashboardPage() {
 
   return (
     <div>
+      <FirmwareAlertBanner count={outdatedFirmwareCount} />
       {/* Status readout hero */}
       <section className="mb-10">
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between mb-4">
