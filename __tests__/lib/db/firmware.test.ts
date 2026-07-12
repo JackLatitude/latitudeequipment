@@ -1,4 +1,9 @@
-import { getFirmwareTargets, upsertFirmwareTarget } from '@/lib/db/firmware'
+import {
+  getFirmwareTargets,
+  upsertFirmwareTarget,
+  getFirmwareModels,
+  getOutdatedFirmwareCount,
+} from '@/lib/db/firmware'
 
 const mockFrom: jest.Mock = jest.fn()
 const mockSupabase = { from: mockFrom }
@@ -52,5 +57,58 @@ describe('upsertFirmwareTarget', () => {
     const [row] = upsert.mock.calls[0]
     expect(row.last_checked_at).toBeUndefined()
     expect(row.source_url).toBe('https://dji.com')
+  })
+})
+
+describe('getFirmwareModels', () => {
+  it('filters to firmware categories + non-deleted items and groups via buildFirmwareModels', async () => {
+    const itemRows = [
+      { id: 'a', name: 'DJI Air 3', serial_number: 'S1', firmware_version: '1.0.0' },
+      { id: 'b', name: 'DJI Air 3', serial_number: 'S2', firmware_version: '1.1.0' },
+    ]
+    const targetRows = [
+      { id: 't1', model: 'DJI Air 3', manufacturer: 'DJI', latest_version: '1.1.0', source_url: null, last_checked_at: null, created_at: '2026-01-01T00:00:00Z' },
+    ]
+    const order = jest.fn().mockResolvedValue({ data: itemRows, error: null })
+    const isFn = jest.fn().mockReturnValue({ order })
+    const inFn = jest.fn().mockReturnValue({ is: isFn })
+    const itemsSelect = jest.fn().mockReturnValue({ in: inFn })
+    const targetsSelect = jest.fn().mockReturnValue({
+      order: jest.fn().mockResolvedValue({ data: targetRows, error: null }),
+    })
+    mockFrom.mockImplementation((table: string) =>
+      table === 'items' ? { select: itemsSelect } : { select: targetsSelect }
+    )
+
+    const models = await getFirmwareModels()
+
+    expect(inFn).toHaveBeenCalledWith('category', expect.arrayContaining(['Cameras', 'Monitoring', 'Drones']))
+    expect(isFn).toHaveBeenCalledWith('deleted_at', null)
+    expect(models).toHaveLength(1)
+    expect(models[0].units.find((u) => u.id === 'a')!.outdated).toBe(true)
+    expect(models[0].units.find((u) => u.id === 'b')!.outdated).toBe(false)
+  })
+})
+
+describe('getOutdatedFirmwareCount', () => {
+  it('returns the count of outdated units across models', async () => {
+    const itemRows = [
+      { id: 'a', name: 'DJI Air 3', serial_number: null, firmware_version: '1.0.0' },
+      { id: 'b', name: 'Sony FX6', serial_number: null, firmware_version: '2.0' },
+    ]
+    const targetRows = [
+      { id: 't1', model: 'DJI Air 3', manufacturer: null, latest_version: '1.1.0', source_url: null, last_checked_at: null, created_at: 'x' },
+      { id: 't2', model: 'Sony FX6', manufacturer: null, latest_version: '2.0', source_url: null, last_checked_at: null, created_at: 'x' },
+    ]
+    const order = jest.fn().mockResolvedValue({ data: itemRows, error: null })
+    const itemsSelect = jest.fn().mockReturnValue({ in: jest.fn().mockReturnValue({ is: jest.fn().mockReturnValue({ order }) }) })
+    const targetsSelect = jest.fn().mockReturnValue({
+      order: jest.fn().mockResolvedValue({ data: targetRows, error: null }),
+    })
+    mockFrom.mockImplementation((table: string) =>
+      table === 'items' ? { select: itemsSelect } : { select: targetsSelect }
+    )
+
+    expect(await getOutdatedFirmwareCount()).toBe(1)
   })
 })
