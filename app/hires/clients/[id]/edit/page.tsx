@@ -11,7 +11,7 @@ export default async function EditClientPage({ params }: Props) {
   if (!client) return notFound()
 
   return (
-    <div>
+    <div className="max-w-2xl mx-auto">
       <div className="mb-6">
         <Link href={`/hires/clients/${id}`} className="text-sm text-brand-mid-grey hover:text-white">← {client.name}</Link>
       </div>

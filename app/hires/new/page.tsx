@@ -6,7 +6,7 @@ import { NewHireForm } from './_components/new-hire-form'
 export default async function NewHirePage() {
   const [clients, profiles] = await Promise.all([getClients(), getProfiles()])
   return (
-    <div>
+    <div className="max-w-2xl mx-auto">
       <div className="mb-6">
         <Link href="/hires" className="text-sm text-brand-mid-grey hover:text-white">← Hires</Link>
       </div>

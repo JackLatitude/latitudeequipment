@@ -17,7 +17,7 @@ export default async function EditKitPage({ params }: Props) {
   if (!kit) return notFound()
 
   return (
-    <div className="max-w-lg">
+    <div className="max-w-2xl mx-auto">
       <div className="mb-6">
         <Link href={`/kits/${id}`} className="text-sm text-brand-mid-grey hover:text-brand-black">
           ← Back

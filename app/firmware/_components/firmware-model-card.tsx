@@ -3,9 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { FirmwareModel } from '@/lib/types'
+import { controlClass } from '@/components/ui/control'
 
-const inputClass =
-  'w-full border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
+const inputClass = controlClass
 
 export function FirmwareModelCard({ model }: { model: FirmwareModel }) {
   const router = useRouter()
@@ -75,7 +75,7 @@ export function FirmwareModelCard({ model }: { model: FirmwareModel }) {
               )}
             </p>
           ) : (
-            <button type="button" onClick={() => setEditing(true)} className="text-brand-red hover:underline">
+            <button type="button" onClick={() => setEditing(true)} className="text-brand-mid-grey hover:text-white underline decoration-dotted underline-offset-2">
               Latest unknown — set it
             </button>
           )}

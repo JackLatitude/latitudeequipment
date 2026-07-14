@@ -1,5 +1,7 @@
 'use client'
 
+import { Button } from '@/components/ui/button'
+
 type Props = {
   open: boolean
   title: string
@@ -17,18 +19,8 @@ export function ConfirmDialog({ open, title, description, confirmLabel = 'Delete
         <h2 className="text-base font-semibold text-white mb-2">{title}</h2>
         <p className="text-sm text-brand-mid-grey mb-6">{description}</p>
         <div className="flex gap-3 justify-end">
-          <button
-            onClick={onCancel}
-            className="text-sm font-medium text-white border border-brand-rule-grey rounded px-4 py-2 hover:bg-brand-dark-surface"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={onConfirm}
-            className="text-sm font-medium text-white bg-brand-red rounded px-4 py-2 hover:opacity-90"
-          >
-            {confirmLabel}
-          </button>
+          <Button variant="secondary" onClick={onCancel}>Cancel</Button>
+          <Button variant="primary" onClick={onConfirm}>{confirmLabel}</Button>
         </div>
       </div>
     </div>

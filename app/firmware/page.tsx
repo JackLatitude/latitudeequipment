@@ -10,9 +10,11 @@ export default async function FirmwarePage() {
     <div>
       <div className="flex flex-col gap-3 mb-6 lg:flex-row lg:items-center lg:justify-between">
         <h1 className="text-xl font-semibold text-white">Firmware</h1>
-        {outdated > 0 && (
+        {outdated > 0 ? (
           <span className="text-sm text-brand-red">{outdated} out of date</span>
-        )}
+        ) : models.length > 0 ? (
+          <span className="text-sm text-brand-mid-grey">All up to date</span>
+        ) : null}
       </div>
 
       {models.length === 0 ? (
@@ -20,7 +22,7 @@ export default async function FirmwarePage() {
           No cameras, monitors, or drones yet. Add equipment in those categories to track firmware.
         </p>
       ) : (
-        <div className="space-y-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           {models.map((m) => (
             <FirmwareModelCard key={m.model} model={m} />
           ))}

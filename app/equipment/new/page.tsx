@@ -27,7 +27,7 @@ export default async function NewItemPage({ searchParams }: Props) {
   }
 
   return (
-    <div className="max-w-lg">
+    <div className="max-w-2xl mx-auto">
       <div className="mb-6">
         <Link href="/equipment" className="text-sm text-brand-mid-grey hover:text-white">← Equipment</Link>
       </div>

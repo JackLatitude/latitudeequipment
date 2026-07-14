@@ -3,9 +3,10 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Client } from '@/lib/types'
+import { controlClass } from '@/components/ui/control'
 
-const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
-const labelClass = 'block text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-1.5'
+const inputClass = controlClass
+const labelClass = 'block text-sm font-medium text-white mb-1'
 
 export function ClientForm({ client }: { client?: Client }) {
   const router = useRouter()
@@ -53,7 +54,7 @@ export function ClientForm({ client }: { client?: Client }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5 max-w-lg">
+    <form onSubmit={handleSubmit} className="space-y-5">
       <div>
         <label htmlFor="client-name" className={labelClass}>Name</label>
         <input id="client-name" value={name} onChange={(e) => setName(e.target.value)} required autoFocus className={inputClass} placeholder="Company or individual's name" />

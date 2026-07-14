@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Item, Kit } from '@/lib/types'
+import { controlClass } from '@/components/ui/control'
 
 type Props = {
   hireId: string
@@ -59,7 +60,7 @@ export function AddItemsPanel({ hireId, items, kits, existingItemIds }: Props) {
     add(kitItemIds)
   }
 
-  const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
+  const inputClass = controlClass
 
   return (
     <div>

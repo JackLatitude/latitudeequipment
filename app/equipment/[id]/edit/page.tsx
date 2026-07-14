@@ -17,7 +17,7 @@ export default async function EditItemPage({ params }: Props) {
   if (!item) return notFound()
 
   return (
-    <div className="max-w-lg">
+    <div className="max-w-2xl mx-auto">
       <div className="mb-6">
         <Link href={`/equipment/${id}`} className="text-sm text-brand-mid-grey hover:text-white">
           ← Back

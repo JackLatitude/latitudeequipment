@@ -3,7 +3,7 @@ import { ClientForm } from '../_components/client-form'
 
 export default function NewClientPage() {
   return (
-    <div>
+    <div className="max-w-2xl mx-auto">
       <div className="mb-6">
         <Link href="/hires/clients" className="text-sm text-brand-mid-grey hover:text-white">← Clients</Link>
       </div>

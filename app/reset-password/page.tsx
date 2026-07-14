@@ -2,9 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { AuthShell, AuthError, PasswordInput, SubmitButton, authLabelClass } from '@/components/auth/auth-ui'
 
 export default function ResetPasswordPage() {
   const router = useRouter()
@@ -70,88 +70,61 @@ export default function ResetPasswordPage() {
     }
   }
 
-  const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2.5 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
-  const labelClass = 'block text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-1.5'
-
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-brand-black px-6">
-
-      {/* Brand mark */}
-      <div className="flex flex-col items-center mb-12">
-        <Image
-          src="/logos/icon_o_mark.png"
-          alt="Latitude Equipment"
-          width={72}
-          height={70}
-          priority
-          className="mb-5"
-        />
-        <p
-          className="text-xs font-extralight tracking-[0.35em] uppercase text-white"
-          style={{ fontFamily: 'Metropolis, sans-serif' }}
-        >
-          Latitude Equipment
-        </p>
-      </div>
-
-      {/* Content */}
-      <div className="w-full max-w-xs">
-        <div className="border-t border-brand-rule-grey mb-8" />
-
-        {expired ? (
+    <AuthShell>
+      <h1 className="sr-only">Set a new password</h1>
+      {expired ? (
+        <div>
+          <p className="text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-3" style={{ fontFamily: 'Metropolis, sans-serif' }}>
+            Link expired
+          </p>
+          <p className="text-sm text-brand-mid-grey mb-6">
+            This reset link has expired or already been used. Request a new one.
+          </p>
+          <Link href="/forgot-password" className="text-xs text-brand-mid-grey transition-colors hover:text-white focus-visible:outline-none focus-visible:text-white focus-visible:underline">
+            Request new link →
+          </Link>
+        </div>
+      ) : !ready ? (
+        <p className="text-sm text-brand-mid-grey" role="status" aria-live="polite">Verifying link…</p>
+      ) : (
+        <form onSubmit={handleSubmit} className="space-y-5" noValidate>
           <div>
-            <p className="text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-3" style={{ fontFamily: 'Metropolis, sans-serif' }}>
-              Link expired
+            <p className="text-sm text-brand-mid-grey mb-5">
+              Choose a new password for your account.
             </p>
-            <p className="text-sm text-brand-mid-grey mb-6">
-              This reset link has expired or already been used. Request a new one.
-            </p>
-            <Link href="/forgot-password" className="text-xs text-brand-mid-grey hover:text-white transition-colors">
-              Request new link →
-            </Link>
+            <label htmlFor="password" className={authLabelClass}>New password</label>
+            <PasswordInput
+              id="password"
+              name="new-password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              autoFocus
+              minLength={8}
+              autoComplete="new-password"
+              aria-invalid={error ? true : undefined}
+              aria-describedby={error ? 'auth-error' : undefined}
+            />
           </div>
-        ) : !ready ? (
-          <p className="text-sm text-brand-mid-grey">Verifying link…</p>
-        ) : (
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <p className="text-sm text-brand-mid-grey mb-5">
-                Choose a new password for your account.
-              </p>
-              <label className={labelClass}>New password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoFocus
-                minLength={8}
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>Confirm password</label>
-              <input
-                type="password"
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                required
-                minLength={8}
-                className={inputClass}
-              />
-            </div>
-            {error && <p className="text-sm text-brand-red">{error}</p>}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-brand-red text-white rounded px-3 py-2.5 text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
-            >
-              {loading ? 'Saving…' : 'Set new password'}
-            </button>
-          </form>
-        )}
-      </div>
-
-    </div>
+          <div>
+            <label htmlFor="confirm" className={authLabelClass}>Confirm password</label>
+            <PasswordInput
+              id="confirm"
+              name="confirm-password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              required
+              minLength={8}
+              autoComplete="new-password"
+              aria-invalid={error ? true : undefined}
+              aria-describedby={error ? 'auth-error' : undefined}
+            />
+          </div>
+          {error && <AuthError>{error}</AuthError>}
+          <SubmitButton loading={loading} loadingLabel="Saving…">Set new password</SubmitButton>
+        </form>
+      )}
+    </AuthShell>
   )
 }

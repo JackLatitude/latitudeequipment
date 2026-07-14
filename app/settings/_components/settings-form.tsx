@@ -5,11 +5,13 @@ import { useRouter } from 'next/navigation'
 import { Field } from '@/components/ui/field'
 import { createClient } from '@/lib/supabase/client'
 import type { Profile } from '@/lib/types'
+import { controlClass } from '@/components/ui/control'
+import { buttonClasses } from '@/components/ui/button'
 
 type Props = { profile: Profile; email: string }
 
-const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
-const btnClass = 'bg-brand-red text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90 disabled:opacity-50'
+const inputClass = controlClass
+const btnClass = buttonClasses('primary')
 
 export function SettingsForm({ profile, email }: Props) {
   const router = useRouter()

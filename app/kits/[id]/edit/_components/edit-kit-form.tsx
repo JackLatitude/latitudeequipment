@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Field } from '@/components/ui/field'
 import type { Kit } from '@/lib/types'
+import { controlClass } from '@/components/ui/control'
 
 type Props = { kit: Kit }
 
@@ -32,8 +33,7 @@ export function EditKitForm({ kit }: Props) {
     }
   }
 
-  const inputClass =
-    'w-full border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
+  const inputClass = controlClass
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">

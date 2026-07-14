@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
+import { AuthShell, AuthError, PasswordInput, SubmitButton, authInputClass, authLabelClass } from '@/components/auth/auth-ui'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -27,71 +28,57 @@ export default function LoginPage() {
     }
   }
 
-  const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2.5 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
-  const labelClass = 'block text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-1.5'
-
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-brand-black px-6">
+    <AuthShell>
+      <h1 className="sr-only">Sign in to Latitude Equipment</h1>
+      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+        <div>
+          <label htmlFor="email" className={authLabelClass}>Email</label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            autoFocus
+            autoComplete="email"
+            inputMode="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
+            aria-invalid={error ? true : undefined}
+            aria-describedby={error ? 'auth-error' : undefined}
+            className={authInputClass}
+          />
+        </div>
+        <div>
+          <label htmlFor="password" className={authLabelClass}>Password</label>
+          <PasswordInput
+            id="password"
+            name="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            autoComplete="current-password"
+            aria-invalid={error ? true : undefined}
+            aria-describedby={error ? 'auth-error' : undefined}
+          />
+        </div>
 
-      {/* Brand mark */}
-      <div className="flex flex-col items-center mb-12">
-        <Image
-          src="/logos/icon_o_mark.png"
-          alt="Latitude Equipment"
-          width={72}
-          height={70}
-          priority
-          className="mb-5"
-        />
-        <p
-          className="text-xs font-extralight tracking-[0.35em] uppercase text-white"
-          style={{ fontFamily: 'Metropolis, sans-serif' }}
-        >
-          Latitude Equipment
-        </p>
-      </div>
+        {error && <AuthError>{error}</AuthError>}
 
-      {/* Form */}
-      <div className="w-full max-w-xs">
-        <div className="border-t border-brand-rule-grey mb-8" />
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <label className={labelClass}>Email</label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              autoFocus
-              className={inputClass}
-            />
-          </div>
-          <div>
-            <label className={labelClass}>Password</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className={inputClass}
-            />
-          </div>
-          {error && <p className="text-sm text-brand-red">{error}</p>}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-brand-red text-white rounded px-3 py-2.5 text-sm font-medium hover:opacity-90 disabled:opacity-50 transition-opacity"
+        <SubmitButton loading={loading} loadingLabel="Signing in…">Sign in</SubmitButton>
+
+        <p className="text-center text-xs text-brand-mid-grey pt-1">
+          <Link
+            href="/forgot-password"
+            className="rounded-sm transition-colors hover:text-white focus-visible:outline-none focus-visible:text-white focus-visible:underline"
           >
-            {loading ? 'Signing in…' : 'Sign in'}
-          </button>
-          <p className="text-center text-xs text-brand-mid-grey pt-1">
-            <a href="/forgot-password" className="hover:text-white transition-colors">
-              Forgot password?
-            </a>
-          </p>
-        </form>
-      </div>
-
-    </div>
+            Forgot password?
+          </Link>
+        </p>
+      </form>
+    </AuthShell>
   )
 }

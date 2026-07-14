@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Field } from '@/components/ui/field'
 import type { Profile } from '@/lib/types'
+import { controlClass } from '@/components/ui/control'
 
 export default function NewKitPage() {
   const router = useRouter()
@@ -36,11 +37,10 @@ export default function NewKitPage() {
     }
   }
 
-  const inputClass =
-    'w-full border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
+  const inputClass = controlClass
 
   return (
-    <div className="max-w-lg">
+    <div className="max-w-2xl mx-auto">
       <div className="mb-6">
         <Link href="/kits" className="text-sm text-brand-mid-grey hover:text-white">
           ← Kits

@@ -4,12 +4,14 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Field } from '@/components/ui/field'
+import { Button } from '@/components/ui/button'
 import { SerialInput } from '@/components/equipment/serial-input'
 import { ITEM_CATEGORIES, ITEM_OWNERS } from '@/lib/constants'
 import type { ItemTemplate, Kit } from '@/lib/types'
+import { controlClass } from '@/components/ui/control'
 
-const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
-const labelClass = 'block text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-1.5'
+const inputClass = controlClass
+const labelClass = 'block text-sm font-medium text-white mb-1'
 
 type Fields = {
   name: string
@@ -238,22 +240,24 @@ export function NewItemForm({ templates, kits, initialSerial, initialTemplate, i
         )}
       </Field>
 
-      <Field label="Category">
-        <select value={fields.category} onChange={(e) => setField('category', e.target.value)} className={inputClass}>
-          <option value="">Select a category</option>
-          {ITEM_CATEGORIES.map((c) => (
-            <option key={c} value={c}>{c}</option>
-          ))}
-        </select>
-      </Field>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Category">
+          <select value={fields.category} onChange={(e) => setField('category', e.target.value)} className={inputClass}>
+            <option value="">Select a category</option>
+            {ITEM_CATEGORIES.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+        </Field>
 
-      <Field label="Owner">
-        <select value={owner} onChange={(e) => setOwner(e.target.value)} className={inputClass}>
-          {ITEM_OWNERS.map((o) => (
-            <option key={o} value={o}>{o}</option>
-          ))}
-        </select>
-      </Field>
+        <Field label="Owner">
+          <select value={owner} onChange={(e) => setOwner(e.target.value)} className={inputClass}>
+            {ITEM_OWNERS.map((o) => (
+              <option key={o} value={o}>{o}</option>
+            ))}
+          </select>
+        </Field>
+      </div>
 
       <Field label="Kit">
         <select value={kitId} onChange={(e) => setKitId(e.target.value)} className={inputClass}>
@@ -264,21 +268,25 @@ export function NewItemForm({ templates, kits, initialSerial, initialTemplate, i
         </select>
       </Field>
 
-      <Field label="Value (£)">
-        <input type="number" step="0.01" min="0" value={fields.value} onChange={(e) => setField('value', e.target.value)} className={inputClass} />
-      </Field>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Value (£)">
+          <input type="number" step="0.01" min="0" value={fields.value} onChange={(e) => setField('value', e.target.value)} className={inputClass} />
+        </Field>
 
-      <Field label="Country of origin">
-        <input value={fields.country} onChange={(e) => setField('country', e.target.value)} placeholder="e.g. China" className={inputClass} />
-      </Field>
+        <Field label="Weight (kg)">
+          <input type="number" step="0.01" min="0" value={fields.weight} onChange={(e) => setField('weight', e.target.value)} className={inputClass} />
+        </Field>
+      </div>
 
-      <Field label="Weight (kg)">
-        <input type="number" step="0.01" min="0" value={fields.weight} onChange={(e) => setField('weight', e.target.value)} className={inputClass} />
-      </Field>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Country of origin">
+          <input value={fields.country} onChange={(e) => setField('country', e.target.value)} placeholder="e.g. China" className={inputClass} />
+        </Field>
 
-      <Field label="Firmware version">
-        <input value={firmwareVersion} onChange={(e) => setFirmwareVersion(e.target.value)} placeholder="e.g. 01.00.0500" className={inputClass} />
-      </Field>
+        <Field label="Firmware version">
+          <input value={firmwareVersion} onChange={(e) => setFirmwareVersion(e.target.value)} placeholder="e.g. 01.00.0500" className={inputClass} />
+        </Field>
+      </div>
 
       <Field label="Notes">
         <textarea rows={3} value={fields.notes} onChange={(e) => setField('notes', e.target.value)} className={inputClass} />
@@ -286,13 +294,7 @@ export function NewItemForm({ templates, kits, initialSerial, initialTemplate, i
 
       {error && <p className="text-sm text-brand-red">{error}</p>}
       <div className="flex gap-3 pt-2">
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-brand-red text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90 disabled:opacity-50"
-        >
-          {loading ? 'Saving…' : 'Add item'}
-        </button>
+        <Button type="submit" loading={loading} loadingLabel="Saving…">Add item</Button>
         <Link href="/equipment" className="text-sm font-medium text-brand-mid-grey px-4 py-2 hover:text-white">
           Cancel
         </Link>

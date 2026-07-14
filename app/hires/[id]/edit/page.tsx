@@ -14,7 +14,7 @@ export default async function EditHirePage({ params }: Props) {
   if (hire.status !== 'draft') redirect(`/hires/${id}`)
 
   return (
-    <div>
+    <div className="max-w-2xl mx-auto">
       <div className="mb-6">
         <Link href={`/hires/${id}`} className="text-sm text-brand-mid-grey hover:text-white">← {hire.ref}</Link>
       </div>

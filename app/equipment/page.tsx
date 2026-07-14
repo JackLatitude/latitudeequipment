@@ -27,7 +27,7 @@ export default async function EquipmentPage({ searchParams }: Props) {
           <ScanToFind />
           <Link
             href="/equipment/new"
-            className="flex-1 lg:flex-none bg-brand-black text-white text-sm font-medium px-4 py-2.5 rounded hover:opacity-80 text-center lg:py-2"
+            className="flex-1 lg:flex-none bg-brand-red text-white text-sm font-medium px-4 py-2.5 rounded hover:opacity-90 text-center lg:py-2"
           >
             Add item
           </Link>

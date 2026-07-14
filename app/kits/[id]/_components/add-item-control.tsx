@@ -2,13 +2,14 @@
 
 import { useState } from 'react'
 import type { Item } from '@/lib/types'
+import { controlClass } from '@/components/ui/control'
 
 type Props = {
   looseItems: Item[]
   onAdd: (itemIds: string[]) => Promise<void>
 }
 
-const inputClass = 'w-full border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
+const inputClass = controlClass
 
 export function AddItemControl({ looseItems, onAdd }: Props) {
   const [selected, setSelected] = useState<Set<string>>(new Set())

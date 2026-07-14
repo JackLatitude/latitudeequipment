@@ -20,7 +20,7 @@ export default async function KitsPage() {
         <h1 className="text-xl font-semibold text-white">Kits</h1>
         <Link
           href="/kits/new"
-          className="bg-brand-black text-brand-white text-sm font-medium px-4 py-2.5 rounded hover:bg-brand-red transition-colors text-center lg:py-2"
+          className="bg-brand-red text-white text-sm font-medium px-4 py-2.5 rounded hover:opacity-90 transition-opacity text-center lg:py-2"
         >
           Add kit
         </Link>
