@@ -4,6 +4,7 @@ import { getProfiles } from '@/lib/db/users'
 import { getActiveHireItemsByItemIds } from '@/lib/db/hires'
 import { ItemTableWrapper } from './_components/item-table-wrapper'
 import { ScanToFind } from '@/components/equipment/scan-to-find'
+import { buttonClasses } from '@/components/ui/button'
 
 type Props = {
   searchParams: Promise<{ search?: string; holder?: string }>
@@ -27,7 +28,7 @@ export default async function EquipmentPage({ searchParams }: Props) {
           <ScanToFind />
           <Link
             href="/equipment/new"
-            className="flex-1 lg:flex-none bg-brand-red text-white text-sm font-medium px-4 py-2.5 rounded hover:opacity-90 text-center lg:py-2"
+            className={buttonClasses('primary', 'flex-1 lg:flex-none py-2.5 lg:py-2 text-center')}
           >
             Add item
           </Link>

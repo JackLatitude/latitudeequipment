@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { getClients } from '@/lib/db/clients'
+import { buttonClasses } from '@/components/ui/button'
 
 export default async function ClientsPage() {
   const clients = await getClients()
@@ -12,7 +13,7 @@ export default async function ClientsPage() {
         <h1 className="text-2xl font-bold text-white">Clients</h1>
         <Link
           href="/hires/clients/new"
-          className="bg-brand-red text-white text-sm font-medium px-4 py-2.5 rounded hover:opacity-90 text-center lg:py-2"
+          className={buttonClasses('primary', 'py-2.5 lg:py-2 text-center')}
         >
           Add client
         </Link>

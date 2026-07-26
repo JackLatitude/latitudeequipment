@@ -7,6 +7,7 @@ import { getOutdatedFirmwareCount } from '@/lib/db/firmware'
 import { StatCard } from './_components/stat-card'
 import { HireCard } from '../hires/_components/hire-card'
 import { FirmwareAlertBanner } from './_components/firmware-alert-banner'
+import { buttonClasses } from '@/components/ui/button'
 
 const labelClass = 'text-xs font-extralight uppercase tracking-wider text-brand-mid-grey'
 
@@ -126,10 +127,7 @@ export default async function DashboardPage() {
           {focusHires.length === 0 ? (
             <div className="border border-brand-rule-grey rounded-lg p-6 bg-brand-dark-surface text-center">
               <p className="text-sm text-brand-mid-grey mb-3">No active or draft hires right now.</p>
-              <Link
-                href="/hires/new"
-                className="inline-block bg-brand-red text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90"
-              >
+              <Link href="/hires/new" className={buttonClasses('primary')}>
                 New hire
               </Link>
             </div>
@@ -147,7 +145,7 @@ export default async function DashboardPage() {
           <div className="flex flex-col gap-2">
             <Link
               href="/hires/new"
-              className="bg-brand-red text-white text-sm font-medium px-4 py-2.5 rounded hover:opacity-90 text-center"
+              className={buttonClasses('primary', 'py-2.5 text-center')}
             >
               New hire
             </Link>

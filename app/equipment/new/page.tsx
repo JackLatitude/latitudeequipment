@@ -22,6 +22,7 @@ export default async function NewItemPage({ searchParams }: Props) {
         country_of_origin: item.country_of_origin,
         weight_kg: item.weight_kg,
         notes: item.notes,
+        unit_number: item.unit_number,
       }
     }
   }

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Field } from '@/components/ui/field'
+import { Button } from '@/components/ui/button'
 import type { Kit } from '@/lib/types'
 import { controlClass } from '@/components/ui/control'
 
@@ -45,13 +46,9 @@ export function EditKitForm({ kit }: Props) {
       </Field>
       {error && <p className="text-sm text-brand-red">{error}</p>}
       <div className="flex gap-3 pt-2">
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-brand-red text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90 disabled:opacity-50"
-        >
-          {loading ? 'Saving…' : 'Save changes'}
-        </button>
+        <Button type="submit" loading={loading} loadingLabel="Saving…">
+          Save changes
+        </Button>
         <Link
           href={`/kits/${kit.id}`}
           className="text-sm font-medium text-brand-mid-grey px-4 py-2 hover:text-white"

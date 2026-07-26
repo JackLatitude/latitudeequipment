@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import type { Item, Kit } from '@/lib/types'
+import { Button } from '@/components/ui/button'
+import { itemDisplayName } from '@/lib/format'
 
 type Props = { items: Item[]; kits: Kit[] }
 
@@ -74,13 +76,14 @@ export function CarnetSelector({ items, kits }: Props) {
         <span className="text-sm text-brand-mid-grey">
           {selected.size === 0 ? 'No items selected' : `${selected.size} item${selected.size === 1 ? '' : 's'} selected`}
         </span>
-        <button
+        <Button
           onClick={handleExport}
-          disabled={selected.size === 0 || exporting}
-          className="text-sm font-medium bg-brand-red text-white px-4 py-2 rounded hover:opacity-90 disabled:opacity-40"
+          disabled={selected.size === 0}
+          loading={exporting}
+          loadingLabel="Exporting…"
         >
-          {exporting ? 'Exporting…' : 'Export .xlsx'}
-        </button>
+          Export .xlsx
+        </Button>
       </div>
 
       {items.length === 0 && (
@@ -130,7 +133,7 @@ export function CarnetSelector({ items, kits }: Props) {
                         className="accent-brand-red"
                       />
                     </td>
-                    <td className="py-2 pr-4 text-white">{item.name}</td>
+                    <td className="py-2 pr-4 text-white">{itemDisplayName(item)}</td>
                     <td className="py-2 pr-4 text-brand-mid-grey">{item.serial_number ?? '—'}</td>
                     <td className="py-2 pr-4 text-brand-mid-grey">{item.value ?? '—'}</td>
                     <td className="py-2 pr-4 text-brand-mid-grey">{item.country_of_origin ?? '—'}</td>
@@ -184,7 +187,7 @@ export function CarnetSelector({ items, kits }: Props) {
                       className="accent-brand-red"
                     />
                   </td>
-                  <td className="py-2 pr-4 text-white">{item.name}</td>
+                  <td className="py-2 pr-4 text-white">{itemDisplayName(item)}</td>
                   <td className="py-2 pr-4 text-brand-mid-grey">{item.serial_number ?? '—'}</td>
                   <td className="py-2 pr-4 text-brand-mid-grey">{item.value ?? '—'}</td>
                   <td className="py-2 pr-4 text-brand-mid-grey">{item.country_of_origin ?? '—'}</td>

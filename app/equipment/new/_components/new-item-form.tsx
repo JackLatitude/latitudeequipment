@@ -9,6 +9,7 @@ import { SerialInput } from '@/components/equipment/serial-input'
 import { ITEM_CATEGORIES, ITEM_OWNERS } from '@/lib/constants'
 import type { ItemTemplate, Kit } from '@/lib/types'
 import { controlClass } from '@/components/ui/control'
+import { itemDisplayName } from '@/lib/format'
 
 const inputClass = controlClass
 const labelClass = 'block text-sm font-medium text-white mb-1'
@@ -207,7 +208,7 @@ export function NewItemForm({ templates, kits, initialSerial, initialTemplate, i
         {suggestion && (
           <div className="mt-2 border border-brand-red/40 bg-brand-red/5 rounded px-3 py-2">
             <p className="text-sm text-white">
-              Looks like a <span className="font-medium">{suggestion.name}</span>. Use its details?
+              Looks like a <span className="font-medium">{itemDisplayName(suggestion)}</span>. Use its details?
             </p>
             <div className="flex gap-4 mt-2">
               <button

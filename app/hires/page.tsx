@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getHires } from '@/lib/db/hires'
 import { HireCard } from './_components/hire-card'
 import type { Hire, HireStatus } from '@/lib/types'
+import { buttonClasses } from '@/components/ui/button'
 
 const GROUP_ORDER: { status: HireStatus; label: string }[] = [
   { status: 'active', label: 'Active' },
@@ -29,7 +30,7 @@ export default async function HiresPage() {
           </Link>
           <Link
             href="/hires/new"
-            className="bg-brand-red text-white text-sm font-medium px-4 py-2.5 rounded hover:opacity-90 text-center lg:py-2"
+            className={buttonClasses('primary', 'py-2.5 lg:py-2 text-center')}
           >
             New hire
           </Link>

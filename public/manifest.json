@@ -2,7 +2,7 @@
   "name": "Latitude Equipment",
   "short_name": "Equipment",
   "description": "Equipment tracker for Latitude Equipment",
-  "start_url": "/equipment",
+  "start_url": "/dashboard",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0a0a0a",

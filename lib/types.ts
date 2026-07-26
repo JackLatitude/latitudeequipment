@@ -29,6 +29,9 @@ export type Item = {
   weight_kg: number | null
   owner: string
   firmware_version: string | null
+  unit_number: number | null
+  paired_item_id: string | null
+  paired_item?: Pick<Item, 'id' | 'name' | 'serial_number' | 'unit_number'> | null
   deleted_at: string | null
   created_at: string
 }
@@ -57,6 +60,7 @@ export type ItemTemplate = {
   country_of_origin: string | null
   weight_kg: number | null
   notes: string | null
+  unit_number: number | null
 }
 
 export type CreateItemData = {

@@ -3,7 +3,8 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import type { Item, Profile } from '@/lib/types'
-import { ITEM_OWNERS } from '@/lib/constants'
+import { ITEM_CATEGORIES, ITEM_OWNERS } from '@/lib/constants'
+import { itemDisplayName } from '@/lib/format'
 
 type Props = {
   items: Item[]
@@ -31,6 +32,8 @@ function ChevronDown() {
   )
 }
 
+const CATEGORY_RANK = new Map<string, number>(ITEM_CATEGORIES.map((c, i) => [c, i]))
+
 function groupByCategory(items: Item[]): [string, Item[]][] {
   const map = new Map<string, Item[]>()
   for (const item of items) {
@@ -40,10 +43,14 @@ function groupByCategory(items: Item[]): [string, Item[]][] {
     else map.set(key, [item])
   }
   const entries = Array.from(map.entries())
-  // Sort: named categories alphabetically, Uncategorised always last
+  // Sort: known categories in ITEM_CATEGORIES order, then any unrecognised
+  // category alphabetically, then Uncategorised always last.
   return entries.sort(([a], [b]) => {
     if (a === 'Uncategorised') return 1
     if (b === 'Uncategorised') return -1
+    const rankA = CATEGORY_RANK.get(a) ?? Infinity
+    const rankB = CATEGORY_RANK.get(b) ?? Infinity
+    if (rankA !== rankB) return rankA - rankB
     return a.localeCompare(b)
   })
 }
@@ -53,10 +60,19 @@ export function ItemTable({ items, profiles, onHireItemIds, search, holderId, on
 
   const onHire = new Set(onHireItemIds)
   const groups = groupByCategory(items)
-  const [collapsed, setCollapsed] = useState<Record<string, boolean>>({})
+
+  // Sections start collapsed, but a search/holder filter expands them — otherwise
+  // filtering would leave the page looking empty, with only headers showing.
+  // An explicit toggle overrides the default either way.
+  const filtersActive = search.trim() !== '' || holderId !== ''
+  const [overrides, setOverrides] = useState<Record<string, boolean>>({})
+  const defaultCollapsed = !filtersActive
 
   function toggle(category: string) {
-    setCollapsed(prev => ({ ...prev, [category]: !prev[category] }))
+    setOverrides(prev => ({
+      ...prev,
+      [category]: !(prev[category] ?? defaultCollapsed),
+    }))
   }
 
   return (
@@ -88,7 +104,7 @@ export function ItemTable({ items, profiles, onHireItemIds, search, holderId, on
       ) : (
         <div className="space-y-4">
           {groups.map(([category, groupItems]) => {
-            const isCollapsed = collapsed[category] ?? false
+            const isCollapsed = overrides[category] ?? defaultCollapsed
             return (
               <div key={category}>
                 {/* Category header */}
@@ -120,7 +136,7 @@ export function ItemTable({ items, profiles, onHireItemIds, search, holderId, on
                         >
                           <div className="min-w-0">
                             <div className="flex items-center min-w-0">
-                              <p className="font-medium text-white truncate">{item.name}</p>
+                              <p className="font-medium text-white truncate">{itemDisplayName(item)}</p>
                               {onHire.has(item.id) && (
                                 <span className="text-[10px] text-brand-red bg-brand-red/10 border border-brand-red/30 rounded-full px-1.5 py-0.5 ml-2 whitespace-nowrap flex-shrink-0">
                                   On hire
@@ -162,7 +178,7 @@ export function ItemTable({ items, profiles, onHireItemIds, search, holderId, on
                           <tr key={item.id} className="border-b border-brand-rule-grey hover:bg-brand-dark-surface">
                             <td className="py-2.5 pr-4">
                               <Link href={`/equipment/${item.id}`} className="font-medium text-white hover:underline">
-                                {item.name}
+                                {itemDisplayName(item)}
                               </Link>
                               {onHire.has(item.id) && (
                                 <span className="text-[10px] text-brand-red bg-brand-red/10 border border-brand-red/30 rounded-full px-1.5 py-0.5 ml-2 align-middle whitespace-nowrap">
@@ -176,7 +192,15 @@ export function ItemTable({ items, profiles, onHireItemIds, search, holderId, on
                               )}
                             </td>
                             <td className="py-2.5 pr-4 text-brand-mid-grey">{item.serial_number ?? '—'}</td>
-                            <td className="py-2.5 pr-4 text-brand-mid-grey">{item.kit?.name ?? '—'}</td>
+                            <td className="py-2.5 pr-4 text-brand-mid-grey">
+                              {item.kit_id && item.kit ? (
+                                <Link href={`/kits/${item.kit_id}`} className="hover:text-white hover:underline">
+                                  {item.kit.name}
+                                </Link>
+                              ) : (
+                                '—'
+                              )}
+                            </td>
                             <td className="py-2.5 text-brand-mid-grey">
                               {item.current_holder?.display_name ?? 'Unassigned'}
                             </td>

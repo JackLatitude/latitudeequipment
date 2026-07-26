@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { BarcodeDetector } from 'barcode-detector/ponyfill'
+import { Button } from '@/components/ui/button'
 
 type Props = {
   onDetected: (text: string) => void
@@ -124,12 +125,7 @@ export default function SerialScanner({ onDetected, onClose }: Props) {
           <div className="absolute inset-0 flex items-center justify-center px-8 bg-brand-black">
             <div className="text-center max-w-xs">
               <p className="text-sm text-white mb-6">{error}</p>
-              <button
-                onClick={onClose}
-                className="bg-brand-red text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90"
-              >
-                Type it instead
-              </button>
+              <Button onClick={onClose}>Type it instead</Button>
             </div>
           </div>
         ) : (

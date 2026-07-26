@@ -7,7 +7,7 @@ export async function getItemTemplates(): Promise<ItemTemplate[]> {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('items')
-    .select('id, name, category, value, country_of_origin, weight_kg, notes')
+    .select('id, name, category, value, country_of_origin, weight_kg, notes, unit_number')
     .is('deleted_at', null)
     .order('created_at', { ascending: false })
   if (error) throw new Error(error.message)
@@ -54,12 +54,43 @@ export async function getItem(id: string): Promise<Item | null> {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('items')
-    .select('*, current_holder:profiles(*), kit:kits(*)')
+    .select('*, current_holder:profiles(*), kit:kits(*), paired_item:items!paired_item_id(id, name, serial_number, unit_number)')
     .eq('id', id)
     .is('deleted_at', null)
     .single()
   if (error) return null
   return data as Item
+}
+
+// Other active, unpaired items sharing this (trimmed, case-insensitive) name —
+// candidates to pair with. Excludes the item itself.
+export async function getUnpairedItemsByName(name: string, excludeId: string): Promise<Item[]> {
+  const supabase = await createClient()
+  const clean = name.trim().replace(/[,()."\\]/g, ' ').trim()
+  const { data, error } = await supabase
+    .from('items')
+    .select('*, current_holder:profiles(*), kit:kits(*)')
+    .ilike('name', clean)
+    .is('deleted_at', null)
+    .is('paired_item_id', null)
+    .neq('id', excludeId)
+    .order('unit_number')
+  if (error) throw new Error(error.message)
+  return data as Item[]
+}
+
+// Links two items as a pair (same name required) and gives them a shared
+// identification number — see migration 0009 for the atomic RPC.
+export async function pairItems(itemAId: string, itemBId: string): Promise<void> {
+  const supabase = await createClient()
+  const { error } = await supabase.rpc('pair_items', { p_item_a: itemAId, p_item_b: itemBId })
+  if (error) throw new Error(error.message)
+}
+
+export async function unpairItem(itemId: string): Promise<void> {
+  const supabase = await createClient()
+  const { error } = await supabase.rpc('unpair_item', { p_item_id: itemId })
+  if (error) throw new Error(error.message)
 }
 
 export async function getLooseItems(): Promise<Item[]> {
@@ -120,7 +151,7 @@ export async function getItemBySerialPrefix(prefix: string): Promise<ItemTemplat
   const supabase = await createClient()
   const { data, error } = await supabase
     .from('items')
-    .select('id, name, category, value, country_of_origin, weight_kg, notes')
+    .select('id, name, category, value, country_of_origin, weight_kg, notes, unit_number')
     .ilike('serial_number', `${clean}%`)
     .is('deleted_at', null)
     .order('created_at', { ascending: false })

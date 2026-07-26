@@ -2,11 +2,13 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import type { Client, Profile } from '@/lib/types'
 import { controlClass } from '@/components/ui/control'
+import { Field } from '@/components/ui/field'
+import { Button } from '@/components/ui/button'
 
 const inputClass = controlClass
-const labelClass = 'block text-sm font-medium text-white mb-1'
 
 export function NewHireForm({ clients, profiles }: { clients: Client[]; profiles: Profile[] }) {
   const router = useRouter()
@@ -48,12 +50,10 @@ export function NewHireForm({ clients, profiles }: { clients: Client[]; profiles
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div>
-        <label htmlFor="hire-title" className={labelClass}>Title</label>
+      <Field label="Title" required htmlFor="hire-title">
         <input id="hire-title" value={title} onChange={(e) => setTitle(e.target.value)} required autoFocus className={inputClass} placeholder="e.g. Nike Shoot – July 2026" />
-      </div>
-      <div>
-        <label htmlFor="hire-client" className={labelClass}>Client</label>
+      </Field>
+      <Field label="Client" required htmlFor="hire-client">
         <select id="hire-client" value={clientId} onChange={(e) => setClientId(e.target.value)} required className={inputClass}>
           <option value="">Select a client…</option>
           {clients.map((c) => (
@@ -61,11 +61,10 @@ export function NewHireForm({ clients, profiles }: { clients: Client[]; profiles
           ))}
         </select>
         <p className="text-xs text-brand-mid-grey mt-1.5">
-          Client not listed? <a href="/hires/clients/new" className="text-white hover:underline">Add a client</a> first.
+          Client not listed? <Link href="/hires/clients/new" className="text-white hover:underline">Add a client</Link> first.
         </p>
-      </div>
-      <div>
-        <label htmlFor="hire-latitude-contact" className={labelClass}>Latitude Contact</label>
+      </Field>
+      <Field label="Latitude Contact" htmlFor="hire-latitude-contact">
         <select id="hire-latitude-contact" value={latitudeContactId} onChange={(e) => setLatitudeContactId(e.target.value)} className={inputClass}>
           <option value="">Unassigned</option>
           {profiles.map((p) => (
@@ -73,25 +72,22 @@ export function NewHireForm({ clients, profiles }: { clients: Client[]; profiles
           ))}
         </select>
         <p className="text-xs text-brand-mid-grey mt-1.5">Who at Latitude is managing this hire.</p>
-      </div>
+      </Field>
       <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="hire-start-date" className={labelClass}>Start date</label>
+        <Field label="Start date" htmlFor="hire-start-date">
           <input id="hire-start-date" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={inputClass} />
-        </div>
-        <div>
-          <label htmlFor="hire-end-date" className={labelClass}>End date</label>
+        </Field>
+        <Field label="End date" htmlFor="hire-end-date">
           <input id="hire-end-date" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className={inputClass} />
-        </div>
+        </Field>
       </div>
-      <div>
-        <label htmlFor="hire-notes" className={labelClass}>Notes</label>
+      <Field label="Notes" htmlFor="hire-notes">
         <textarea id="hire-notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className={inputClass} />
-      </div>
+      </Field>
       {error && <p className="text-sm text-brand-red">{error}</p>}
-      <button type="submit" disabled={loading} className="bg-brand-red text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90 disabled:opacity-50">
-        {loading ? 'Creating…' : 'Create hire'}
-      </button>
+      <Button type="submit" loading={loading} loadingLabel="Creating…">
+        Create hire
+      </Button>
     </form>
   )
 }

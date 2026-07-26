@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { getKits } from '@/lib/db/kits'
 import { getItems } from '@/lib/db/items'
 import { KitCard } from '@/components/kits/kit-card'
+import { buttonClasses } from '@/components/ui/button'
 
 export default async function KitsPage() {
   const [kits, allItems] = await Promise.all([
@@ -18,10 +19,7 @@ export default async function KitsPage() {
     <div>
       <div className="flex flex-col gap-3 mb-6 lg:flex-row lg:items-center lg:justify-between">
         <h1 className="text-xl font-semibold text-white">Kits</h1>
-        <Link
-          href="/kits/new"
-          className="bg-brand-red text-white text-sm font-medium px-4 py-2.5 rounded hover:opacity-90 transition-opacity text-center lg:py-2"
-        >
+        <Link href="/kits/new" className={buttonClasses('primary', 'py-2.5 lg:py-2 text-center')}>
           Add kit
         </Link>
       </div>

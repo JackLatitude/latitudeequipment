@@ -1,13 +1,16 @@
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
-import { getItem, deleteItem } from '@/lib/db/items'
+import { getItem, deleteItem, getUnpairedItemsByName, pairItems, unpairItem } from '@/lib/db/items'
 import { getProfiles } from '@/lib/db/users'
 import { getItemHistory, assignItem } from '@/lib/db/assignments'
 import { getActiveHireItemsByItemIds } from '@/lib/db/hires'
 import { createClient } from '@/lib/supabase/server'
 import { AssignControl } from '@/components/equipment/assign-control'
+import { PairControl } from '@/components/equipment/pair-control'
 import { revalidatePath } from 'next/cache'
 import { DeleteItemButton } from './_components/delete-button'
+import { itemDisplayName } from '@/lib/format'
+import { isPairableItemName } from '@/lib/constants'
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -28,10 +31,32 @@ export default async function ItemDetailPage({ params }: Props) {
 
   const [activeHireItem] = await getActiveHireItemsByItemIds([item.id])
 
+  const isPairable = isPairableItemName(item.name)
+  const pairCandidates = isPairable && !item.paired_item_id
+    ? await getUnpairedItemsByName(item.name, item.id)
+    : []
+
   async function handleAssign(itemId: string, assignedToId: string | null) {
     'use server'
     await assignItem(itemId, assignedToId, user!.id)
     revalidatePath(`/equipment/${itemId}`)
+    revalidatePath('/equipment')
+  }
+
+  async function handlePair(itemId: string, partnerId: string) {
+    'use server'
+    await pairItems(itemId, partnerId)
+    revalidatePath(`/equipment/${itemId}`)
+    revalidatePath(`/equipment/${partnerId}`)
+    revalidatePath('/equipment')
+  }
+
+  async function handleUnpair(itemId: string) {
+    'use server'
+    const current = await getItem(itemId)
+    await unpairItem(itemId)
+    revalidatePath(`/equipment/${itemId}`)
+    if (current?.paired_item_id) revalidatePath(`/equipment/${current.paired_item_id}`)
     revalidatePath('/equipment')
   }
 
@@ -50,7 +75,7 @@ export default async function ItemDetailPage({ params }: Props) {
       </div>
 
       <div className="flex items-start justify-between mb-6">
-        <h1 className="text-2xl font-bold text-white">{item.name}</h1>
+        <h1 className="text-2xl font-bold text-white">{itemDisplayName(item)}</h1>
         <div className="flex gap-2 flex-shrink-0 ml-4">
           <Link
             href={`/equipment/new?from=${item.id}`}
@@ -90,17 +115,39 @@ export default async function ItemDetailPage({ params }: Props) {
         />
       </div>
 
+      {isPairable && (
+        <div className="mb-8">
+          <p className="text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-2">Paired with</p>
+          <PairControl
+            itemId={item.id}
+            pairedItem={item.paired_item}
+            candidates={pairCandidates}
+            onPair={handlePair}
+            onUnpair={handleUnpair}
+          />
+        </div>
+      )}
+
       <dl className="grid grid-cols-2 gap-x-6 gap-y-5 mb-8">
-        {[
-          ['Owner', item.owner],
-          ['Serial number', item.serial_number ?? '—'],
-          ['Category', item.category ?? '—'],
-          ['Kit', item.kit?.name ?? '—'],
-          ['Value', item.value != null ? `£${item.value.toLocaleString()}` : '—'],
-          ['Country of origin', item.country_of_origin ?? '—'],
-          ['Weight', item.weight_kg != null ? `${item.weight_kg} kg` : '—'],
-          ['Firmware version', item.firmware_version ?? '—'],
-        ].map(([label, value]) => (
+        {([
+          { label: 'Owner', value: item.owner },
+          { label: 'Serial number', value: item.serial_number ?? '—' },
+          { label: 'Category', value: item.category ?? '—' },
+          {
+            label: 'Kit',
+            value: item.kit_id && item.kit ? (
+              <Link href={`/kits/${item.kit_id}`} className="hover:underline">
+                {item.kit.name}
+              </Link>
+            ) : (
+              '—'
+            ),
+          },
+          { label: 'Value', value: item.value != null ? `£${item.value.toLocaleString()}` : '—' },
+          { label: 'Country of origin', value: item.country_of_origin ?? '—' },
+          { label: 'Weight', value: item.weight_kg != null ? `${item.weight_kg} kg` : '—' },
+          { label: 'Firmware version', value: item.firmware_version ?? '—' },
+        ] satisfies { label: string; value: React.ReactNode }[]).map(({ label, value }) => (
           <div key={label}>
             <dt className="text-xs font-extralight uppercase tracking-wider text-brand-mid-grey mb-0.5">{label}</dt>
             <dd className="text-sm font-medium text-white">{value}</dd>

@@ -4,9 +4,10 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Client } from '@/lib/types'
 import { controlClass } from '@/components/ui/control'
+import { Field } from '@/components/ui/field'
+import { Button } from '@/components/ui/button'
 
 const inputClass = controlClass
-const labelClass = 'block text-sm font-medium text-white mb-1'
 
 export function ClientForm({ client }: { client?: Client }) {
   const router = useRouter()
@@ -55,36 +56,30 @@ export function ClientForm({ client }: { client?: Client }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div>
-        <label htmlFor="client-name" className={labelClass}>Name</label>
+      <Field label="Name" required htmlFor="client-name">
         <input id="client-name" value={name} onChange={(e) => setName(e.target.value)} required autoFocus className={inputClass} placeholder="Company or individual's name" />
-      </div>
-      <div>
-        <label htmlFor="client-contact-name" className={labelClass}>Contact name</label>
+      </Field>
+      <Field label="Contact name" htmlFor="client-contact-name">
         <input id="client-contact-name" value={contactName} onChange={(e) => setContactName(e.target.value)} className={inputClass} placeholder="Leave blank for individuals" />
-      </div>
+      </Field>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="client-email" className={labelClass}>Email</label>
+        <Field label="Email" htmlFor="client-email">
           <input id="client-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className={inputClass} />
-        </div>
-        <div>
-          <label htmlFor="client-phone" className={labelClass}>Phone</label>
+        </Field>
+        <Field label="Phone" htmlFor="client-phone">
           <input id="client-phone" type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} className={inputClass} />
-        </div>
+        </Field>
       </div>
-      <div>
-        <label htmlFor="client-address" className={labelClass}>Address</label>
+      <Field label="Address" htmlFor="client-address">
         <textarea id="client-address" value={address} onChange={(e) => setAddress(e.target.value)} rows={3} className={inputClass} />
-      </div>
-      <div>
-        <label htmlFor="client-notes" className={labelClass}>Notes</label>
+      </Field>
+      <Field label="Notes" htmlFor="client-notes">
         <textarea id="client-notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className={inputClass} />
-      </div>
+      </Field>
       {error && <p className="text-sm text-brand-red">{error}</p>}
-      <button type="submit" disabled={loading} className="bg-brand-red text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90 disabled:opacity-50">
-        {loading ? 'Saving…' : client ? 'Save changes' : 'Add client'}
-      </button>
+      <Button type="submit" loading={loading} loadingLabel="Saving…">
+        {client ? 'Save changes' : 'Add client'}
+      </Button>
     </form>
   )
 }

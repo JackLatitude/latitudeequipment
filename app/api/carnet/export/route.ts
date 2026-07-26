@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getItemsByIds } from '@/lib/db/items'
 import { NextResponse } from 'next/server'
 import { serverError, readJson } from '@/lib/api/route-helpers'
+import { itemDisplayName } from '@/lib/format'
 import * as XLSX from 'xlsx'
 
 export async function POST(request: Request) {
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
 
     const rows = items.map((item) => ({
       'Kit': item.kit?.name ?? 'Loose item',
-      'Name': item.name,
+      'Name': itemDisplayName(item),
       'Serial Number': item.serial_number ?? '',
       'Value (£)': item.value ?? '',
       'Country of Origin': item.country_of_origin ?? '',

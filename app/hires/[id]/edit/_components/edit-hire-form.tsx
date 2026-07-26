@@ -4,9 +4,10 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Client, Hire, Profile } from '@/lib/types'
 import { controlClass } from '@/components/ui/control'
+import { Field } from '@/components/ui/field'
+import { Button } from '@/components/ui/button'
 
 const inputClass = controlClass
-const labelClass = 'block text-sm font-medium text-white mb-1'
 
 export function EditHireForm({ hire, clients, profiles }: { hire: Hire; clients: Client[]; profiles: Profile[] }) {
   const router = useRouter()
@@ -47,45 +48,39 @@ export function EditHireForm({ hire, clients, profiles }: { hire: Hire; clients:
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div>
-        <label htmlFor="edit-hire-title" className={labelClass}>Title</label>
+      <Field label="Title" required htmlFor="edit-hire-title">
         <input id="edit-hire-title" value={title} onChange={(e) => setTitle(e.target.value)} required className={inputClass} />
-      </div>
-      <div>
-        <label htmlFor="edit-hire-client" className={labelClass}>Client</label>
+      </Field>
+      <Field label="Client" required htmlFor="edit-hire-client">
         <select id="edit-hire-client" value={clientId} onChange={(e) => setClientId(e.target.value)} required className={inputClass}>
           {clients.map((c) => (
             <option key={c.id} value={c.id}>{c.name}</option>
           ))}
         </select>
-      </div>
-      <div>
-        <label htmlFor="edit-hire-latitude-contact" className={labelClass}>Latitude Contact</label>
+      </Field>
+      <Field label="Latitude Contact" htmlFor="edit-hire-latitude-contact">
         <select id="edit-hire-latitude-contact" value={latitudeContactId} onChange={(e) => setLatitudeContactId(e.target.value)} className={inputClass}>
           <option value="">Unassigned</option>
           {profiles.map((p) => (
             <option key={p.id} value={p.id}>{p.display_name}</option>
           ))}
         </select>
-      </div>
+      </Field>
       <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label htmlFor="edit-hire-start-date" className={labelClass}>Start date</label>
+        <Field label="Start date" htmlFor="edit-hire-start-date">
           <input id="edit-hire-start-date" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className={inputClass} />
-        </div>
-        <div>
-          <label htmlFor="edit-hire-end-date" className={labelClass}>End date</label>
+        </Field>
+        <Field label="End date" htmlFor="edit-hire-end-date">
           <input id="edit-hire-end-date" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className={inputClass} />
-        </div>
+        </Field>
       </div>
-      <div>
-        <label htmlFor="edit-hire-notes" className={labelClass}>Notes</label>
+      <Field label="Notes" htmlFor="edit-hire-notes">
         <textarea id="edit-hire-notes" value={notes} onChange={(e) => setNotes(e.target.value)} rows={3} className={inputClass} />
-      </div>
+      </Field>
       {error && <p className="text-sm text-brand-red">{error}</p>}
-      <button type="submit" disabled={loading} className="bg-brand-red text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90 disabled:opacity-50">
-        {loading ? 'Saving…' : 'Save changes'}
-      </button>
+      <Button type="submit" loading={loading} loadingLabel="Saving…">
+        Save changes
+      </Button>
     </form>
   )
 }

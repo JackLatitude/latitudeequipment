@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import type { Item } from '@/lib/types'
 import { controlClass } from '@/components/ui/control'
+import { Button } from '@/components/ui/button'
+import { itemDisplayName } from '@/lib/format'
 
 type Props = {
   looseItems: Item[]
@@ -74,7 +76,7 @@ export function AddItemControl({ looseItems, onAdd }: Props) {
                 className="w-4 h-4 flex-shrink-0 accent-brand-red"
               />
               <span className="min-w-0">
-                <span className="text-sm text-white block truncate">{item.name}</span>
+                <span className="text-sm text-white block truncate">{itemDisplayName(item)}</span>
                 {item.serial_number && (
                   <span className="text-xs text-brand-mid-grey">{item.serial_number}</span>
                 )}
@@ -86,13 +88,9 @@ export function AddItemControl({ looseItems, onAdd }: Props) {
           <li className="px-3 py-2 text-sm text-brand-mid-grey">No matching loose items.</li>
         )}
       </ul>
-      <button
-        onClick={handleAdd}
-        disabled={loading || selected.size === 0}
-        className="mt-2 text-sm font-medium bg-brand-red text-white px-4 py-2 rounded hover:opacity-90 disabled:opacity-40"
-      >
+      <Button onClick={handleAdd} disabled={selected.size === 0} loading={loading} className="mt-2">
         {label}
-      </button>
+      </Button>
     </div>
   )
 }

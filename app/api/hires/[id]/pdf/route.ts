@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { getHire } from '@/lib/db/hires'
 import { generateHirePdf, type HirePdfData } from '@/lib/pdf/hire-pdf'
+import { itemDisplayName } from '@/lib/format'
 import { NextResponse } from 'next/server'
 
 export const runtime = 'nodejs'
@@ -36,7 +37,7 @@ export async function GET(request: Request, { params }: Ctx) {
     latitude_contact: hire.latitude_contact?.display_name ?? null,
     checked_out_at: checkedOutAt,
     items: (hire.hire_items ?? []).map((hi) => ({
-      name: hi.item?.name ?? 'Unknown item',
+      name: hi.item ? itemDisplayName(hi.item) : 'Unknown item',
       serial_number: hi.item?.serial_number ?? null,
       category: hi.item?.category ?? null,
       checked_in: hi.checked_in_at != null,

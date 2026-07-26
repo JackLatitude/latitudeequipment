@@ -10,6 +10,7 @@ import { KitAssignControl } from '@/components/kits/kit-assign-control'
 import { AssignControl } from '@/components/equipment/assign-control'
 import { KitActions } from './_components/kit-actions'
 import { AddItemControl } from './_components/add-item-control'
+import { itemDisplayName } from '@/lib/format'
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -114,7 +115,7 @@ export default async function KitDetailPage({ params }: Props) {
                   className="flex items-center justify-between bg-brand-dark-surface border border-brand-rule-grey rounded-lg px-4 py-3 active:opacity-70"
                 >
                   <div className="min-w-0">
-                    <p className="font-medium text-white truncate">{item.name}</p>
+                    <p className="font-medium text-white truncate">{itemDisplayName(item)}</p>
                     <p className="text-sm text-brand-mid-grey mt-0.5">
                       {item.serial_number ? item.serial_number : '—'}
                     </p>
@@ -140,7 +141,7 @@ export default async function KitDetailPage({ params }: Props) {
                   <tr key={item.id} className="border-b border-brand-rule-grey">
                     <td className="py-2.5 pr-4">
                       <Link href={`/equipment/${item.id}`} className="font-medium text-white hover:underline">
-                        {item.name}
+                        {itemDisplayName(item)}
                       </Link>
                     </td>
                     <td className="py-2.5 pr-4 text-brand-mid-grey">{item.serial_number ?? '—'}</td>

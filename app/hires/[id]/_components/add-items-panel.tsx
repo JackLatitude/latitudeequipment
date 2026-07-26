@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import type { Item, Kit } from '@/lib/types'
 import { controlClass } from '@/components/ui/control'
+import { itemDisplayName } from '@/lib/format'
 
 type Props = {
   hireId: string
@@ -91,7 +92,7 @@ export function AddItemsPanel({ hireId, items, kits, existingItemIds }: Props) {
           {matchedItems.map((item) => (
             <li key={item.id} className="flex items-center justify-between gap-3 px-4 py-2.5">
               <div className="min-w-0">
-                <p className="text-sm text-white truncate">{item.name}</p>
+                <p className="text-sm text-white truncate">{itemDisplayName(item)}</p>
                 <p className="text-xs text-brand-mid-grey truncate">
                   {[item.serial_number, item.category].filter(Boolean).join(' · ') || '—'}
                 </p>

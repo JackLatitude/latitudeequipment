@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Field } from '@/components/ui/field'
+import { Button } from '@/components/ui/button'
 import type { Profile } from '@/lib/types'
 import { controlClass } from '@/components/ui/control'
 
@@ -66,13 +67,9 @@ export default function NewKitPage() {
         </Field>
         {error && <p className="text-sm text-brand-red">{error}</p>}
         <div className="flex gap-3 pt-2">
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-brand-red text-white text-sm font-medium px-4 py-2 rounded hover:opacity-90 disabled:opacity-50"
-          >
-            {loading ? 'Saving…' : 'Add kit'}
-          </button>
+          <Button type="submit" loading={loading} loadingLabel="Saving…">
+            Add kit
+          </Button>
           <Link
             href="/kits"
             className="text-sm font-medium text-brand-mid-grey px-4 py-2 hover:text-white"

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import type { ItemTemplate } from '@/lib/types'
+import { itemDisplayName } from '@/lib/format'
 
 const SerialScanner = dynamic(() => import('./serial-scanner'), { ssr: false })
 
@@ -81,7 +82,7 @@ export function ScanToFind() {
         <div role="status" className={toastClass}>
           <div className="flex items-start justify-between gap-3">
             <p className="text-sm text-white">
-              Serial not found. Is this a <span className="font-medium">{suggestion.item.name}</span>?
+              Serial not found. Is this a <span className="font-medium">{itemDisplayName(suggestion.item)}</span>?
             </p>
             <button
               onClick={() => setSuggestion(null)}

@@ -37,3 +37,6 @@ next-env.d.ts
 supabase/.branches
 supabase/.temp
 .vercel
+
+# graphify knowledge-graph output (tooling artifact, not app code)
+graphify-out/
