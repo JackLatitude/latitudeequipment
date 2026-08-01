@@ -44,7 +44,8 @@ export async function assignKit(
 export async function addItemsToKit(
   kitId: string,
   itemIds: string[],
-  assignedById: string
+  assignedById: string,
+  hireId?: string | null
 ): Promise<void> {
   if (itemIds.length === 0) return
   const supabase = await createClient()
@@ -52,6 +53,7 @@ export async function addItemsToKit(
     p_kit_id: kitId,
     p_item_ids: itemIds,
     p_assigned_by: assignedById,
+    p_hire_id: hireId ?? null,
   })
   if (error) throw new Error(error.message)
 }

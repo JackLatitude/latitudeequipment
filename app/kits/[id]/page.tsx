@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { getKit } from '@/lib/db/kits'
 import { getItems, getLooseItems } from '@/lib/db/items'
 import { getProfiles } from '@/lib/db/users'
+import { getActiveHireItemsByItemIds } from '@/lib/db/hires'
 import { assignKit, assignItem, addItemsToKit } from '@/lib/db/assignments'
 import { createClient } from '@/lib/supabase/server'
 import { KitAssignControl } from '@/components/kits/kit-assign-control'
@@ -31,6 +32,12 @@ export default async function KitDetailPage({ params }: Props) {
   if (!kit) return notFound()
   const kitItems = allItems.filter((item) => item.kit_id === kit.id)
 
+  // If any of the kit's items is on an active hire, treat the whole kit as
+  // "on hire" — items are added/removed from kits as a unit in this app, so
+  // one active hire_item is enough to infer which hire the kit is out on.
+  const [activeHireItem] = await getActiveHireItemsByItemIds(kitItems.map((i) => i.id))
+  const activeHire = activeHireItem?.hire ?? null
+
   async function handleAssignKit(kitId: string, assignedToId: string) {
     'use server'
     await assignKit(kitId, assignedToId, user!.id)
@@ -48,10 +55,11 @@ export default async function KitDetailPage({ params }: Props) {
 
   async function handleAddItems(itemIds: string[]) {
     'use server'
-    await addItemsToKit(kit!.id, itemIds, user!.id)
+    await addItemsToKit(kit!.id, itemIds, user!.id, activeHire?.id)
     revalidatePath(`/kits/${id}`)
     revalidatePath('/equipment')
     revalidatePath('/kits')
+    if (activeHire) revalidatePath(`/hires/${activeHire.id}`)
   }
 
   return (
@@ -98,6 +106,15 @@ export default async function KitDetailPage({ params }: Props) {
         {looseItems.length > 0 && (
           <div className="mb-4">
             <p className="text-xs text-brand-mid-grey mb-2">Add loose items to this kit:</p>
+            {activeHire && (
+              <p className="text-xs text-brand-red mb-2">
+                This kit is on hire —{' '}
+                <Link href={`/hires/${activeHire.id}`} className="hover:underline">
+                  {activeHire.title} · {activeHire.ref}
+                </Link>
+                . Items added here will be checked out onto that hire immediately.
+              </p>
+            )}
             <AddItemControl looseItems={looseItems} onAdd={handleAddItems} />
           </div>
         )}
