@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createKit } from '@/lib/db/kits'
 import { NextResponse } from 'next/server'
 import { serverError, readJson } from '@/lib/api/route-helpers'
+import { capitalizeWords } from '@/lib/text'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -12,7 +13,7 @@ export async function POST(request: Request) {
   if (!body) return NextResponse.json({ message: 'Invalid JSON body' }, { status: 400 })
   try {
     const kit = await createKit({
-      name: body.name,
+      name: typeof body.name === 'string' ? capitalizeWords(body.name) : body.name,
       description: body.description || undefined,
       current_holder_id: body.current_holder_id,
     })
