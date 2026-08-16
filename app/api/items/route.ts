@@ -5,6 +5,7 @@ import { assignItem } from '@/lib/db/assignments'
 import { NextResponse } from 'next/server'
 import { serverError, readJson, optionalNumber } from '@/lib/api/route-helpers'
 import { normalizeOwner } from '@/lib/constants'
+import { capitalizeWords } from '@/lib/text'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -28,7 +29,7 @@ export async function POST(request: Request) {
     }
 
     const item = await createItem({
-      name: body.name,
+      name: typeof body.name === 'string' ? capitalizeWords(body.name) : body.name,
       serial_number: body.serial_number || undefined,
       category: body.category || undefined,
       notes: body.notes || undefined,

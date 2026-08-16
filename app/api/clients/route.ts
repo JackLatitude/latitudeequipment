@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createClient_ } from '@/lib/db/clients'
 import { NextResponse } from 'next/server'
 import { serverError, readJson } from '@/lib/api/route-helpers'
+import { capitalizeWords } from '@/lib/text'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
   }
   try {
     const client = await createClient_({
-      name: body.name,
+      name: typeof body.name === 'string' ? capitalizeWords(body.name) : body.name,
       contact_name: body.contact_name || undefined,
       email: body.email || undefined,
       phone: body.phone || undefined,
