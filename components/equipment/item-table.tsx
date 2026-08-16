@@ -32,6 +32,49 @@ function ChevronDown() {
   )
 }
 
+function SortIcon({ dir }: { dir: SortDir }) {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={dir === 'desc' ? 'rotate-180' : undefined}>
+      <line x1="12" y1="19" x2="12" y2="5" />
+      <polyline points="5 12 12 5 19 12" />
+    </svg>
+  )
+}
+
+type SortField = 'name' | 'serial_number' | 'kit' | 'holder' | 'created_at'
+type SortDir = 'asc' | 'desc'
+
+const SORT_FIELDS: { value: SortField; label: string }[] = [
+  { value: 'name', label: 'Name' },
+  { value: 'serial_number', label: 'Serial number' },
+  { value: 'kit', label: 'Kit' },
+  { value: 'holder', label: 'Holder' },
+  { value: 'created_at', label: 'Date added' },
+]
+
+function sortKey(item: Item, field: SortField): string | null {
+  switch (field) {
+    case 'name': return item.name
+    case 'serial_number': return item.serial_number
+    case 'kit': return item.kit?.name ?? null
+    case 'holder': return item.current_holder?.display_name ?? null
+    case 'created_at': return item.created_at
+  }
+}
+
+function sortItems(items: Item[], field: SortField, dir: SortDir): Item[] {
+  const sign = dir === 'asc' ? 1 : -1
+  return [...items].sort((a, b) => {
+    const ka = sortKey(a, field)
+    const kb = sortKey(b, field)
+    // Nulls (no serial/kit/holder) always sort last, regardless of direction.
+    if (ka === null && kb === null) return 0
+    if (ka === null) return 1
+    if (kb === null) return -1
+    return ka.localeCompare(kb) * sign
+  })
+}
+
 const CATEGORY_RANK = new Map<string, number>(ITEM_CATEGORIES.map((c, i) => [c, i]))
 
 function groupByCategory(items: Item[]): [string, Item[]][] {
@@ -59,6 +102,8 @@ export function ItemTable({ items, profiles, onHireItemIds, search, holderId, on
   const inputClass = 'border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
 
   const onHire = new Set(onHireItemIds)
+  const [sortField, setSortField] = useState<SortField>('name')
+  const [sortDir, setSortDir] = useState<SortDir>('asc')
   const groups = groupByCategory(items)
 
   // Sections start collapsed, but a search/holder filter expands them — otherwise
@@ -97,13 +142,35 @@ export function ItemTable({ items, profiles, onHireItemIds, search, holderId, on
             <option key={p.id} value={p.id}>{p.display_name}</option>
           ))}
         </select>
+        <div className="flex gap-2">
+          <select
+            value={sortField}
+            onChange={(e) => setSortField(e.target.value as SortField)}
+            className={`${inputClass} flex-1 lg:flex-none lg:w-auto`}
+            aria-label="Sort by"
+          >
+            {SORT_FIELDS.map((f) => (
+              <option key={f.value} value={f.value}>Sort: {f.label}</option>
+            ))}
+          </select>
+          <button
+            type="button"
+            onClick={() => setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
+            className={`${inputClass} px-3 flex items-center justify-center`}
+            aria-label={sortDir === 'asc' ? 'Sort ascending' : 'Sort descending'}
+            title={sortDir === 'asc' ? 'Ascending' : 'Descending'}
+          >
+            <SortIcon dir={sortDir} />
+          </button>
+        </div>
       </div>
 
       {items.length === 0 ? (
         <p className="text-sm text-brand-mid-grey">No equipment matches your filters. Try clearing the search or selecting a different holder.</p>
       ) : (
         <div className="space-y-4">
-          {groups.map(([category, groupItems]) => {
+          {groups.map(([category, rawGroupItems]) => {
+            const groupItems = sortItems(rawGroupItems, sortField, sortDir)
             const isCollapsed = overrides[category] ?? defaultCollapsed
             return (
               <div key={category}>
