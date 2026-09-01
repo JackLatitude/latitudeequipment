@@ -26,3 +26,20 @@ export function optionalNumber(v: unknown): number | undefined | null {
   const n = typeof v === 'number' ? v : parseFloat(String(v))
   return Number.isFinite(n) ? n : null
 }
+
+/**
+ * Parse the optional user-supplied unit number. Blank means "let the database
+ * pick the next free one", which is the common case, so it's `undefined`
+ * rather than an error. Anything that isn't a whole number of 1 or more is
+ * rejected with a message meant for the person filling in the form.
+ */
+export function parseUnitNumber(
+  v: unknown
+): { ok: true; value: number | undefined } | { ok: false; message: string } {
+  if (v === undefined || v === null || v === '') return { ok: true, value: undefined }
+  const n = typeof v === 'number' ? v : Number(String(v).trim())
+  if (!Number.isInteger(n) || n < 1) {
+    return { ok: false, message: 'Unit number must be a whole number of 1 or more' }
+  }
+  return { ok: true, value: n }
+}

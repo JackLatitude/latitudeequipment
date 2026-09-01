@@ -53,6 +53,7 @@ export function NewItemForm({ templates, kits, initialSerial, initialTemplate, i
   const [kitId, setKitId] = useState(initialKitId)
   const [owner, setOwner] = useState<string>(ITEM_OWNERS[0])
   const [firmwareVersion, setFirmwareVersion] = useState('')
+  const [unitNumber, setUnitNumber] = useState('')
 
   // Copy-from picker
   const [search, setSearch] = useState('')
@@ -128,6 +129,7 @@ export function NewItemForm({ templates, kits, initialSerial, initialTemplate, i
         notes: fields.notes,
         owner,
         firmware_version: firmwareVersion,
+        unit_number: unitNumber,
         kit_id: kitId,
       }),
     })
@@ -201,6 +203,22 @@ export function NewItemForm({ templates, kits, initialSerial, initialTemplate, i
 
       <Field label="Name" required>
         <input value={fields.name} onChange={(e) => setField('name', e.target.value)} required className={inputClass} />
+      </Field>
+
+      <Field label="Unit number">
+        <input
+          type="number"
+          min="1"
+          step="1"
+          value={unitNumber}
+          onChange={(e) => setUnitNumber(e.target.value)}
+          placeholder="Auto"
+          className={inputClass}
+        />
+        <p className="text-xs text-brand-mid-grey mt-1.5">
+          Shown after the name, as {fields.name.trim() ? `“${fields.name.trim()} #2”` : '“TX Unit #2”'}. Leave blank and it takes the
+          lowest free number for this model.
+        </p>
       </Field>
 
       <Field label="Serial number">

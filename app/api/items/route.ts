@@ -1,11 +1,12 @@
 import { createClient } from '@/lib/supabase/server'
-import { createItem, updateItem, getItem } from '@/lib/db/items'
+import { createItem, updateItem, getItem, findUnitNumberClash } from '@/lib/db/items'
 import { getKit } from '@/lib/db/kits'
 import { assignItem } from '@/lib/db/assignments'
 import { NextResponse } from 'next/server'
-import { serverError, readJson, optionalNumber } from '@/lib/api/route-helpers'
+import { serverError, readJson, optionalNumber, parseUnitNumber } from '@/lib/api/route-helpers'
 import { normalizeOwner } from '@/lib/constants'
 import { capitalizeWords } from '@/lib/text'
+import { itemDisplayName } from '@/lib/format'
 
 export async function POST(request: Request) {
   const supabase = await createClient()
@@ -20,8 +21,23 @@ export async function POST(request: Request) {
   if (value === null || weightKg === null) {
     return NextResponse.json({ message: 'Value and weight must be numbers' }, { status: 400 })
   }
+  const unitNumber = parseUnitNumber(body.unit_number)
+  if (!unitNumber.ok) return NextResponse.json({ message: unitNumber.message }, { status: 400 })
   const kitId = typeof body.kit_id === 'string' ? body.kit_id.trim() : ''
+  const name = typeof body.name === 'string' ? capitalizeWords(body.name) : body.name
   try {
+    // A number the user typed has to be free, or they'd end up with two
+    // "#3"s and no way to tell the units apart on the shelf.
+    if (unitNumber.value !== undefined) {
+      const clash = await findUnitNumberClash(name, unitNumber.value)
+      if (clash) {
+        return NextResponse.json(
+          { message: `${itemDisplayName(clash)} already uses that number` },
+          { status: 409 }
+        )
+      }
+    }
+
     // Validate the kit before creating so a bad id can't orphan an item.
     const kit = kitId ? await getKit(kitId) : null
     if (kitId && !kit) {
@@ -29,7 +45,7 @@ export async function POST(request: Request) {
     }
 
     const item = await createItem({
-      name: typeof body.name === 'string' ? capitalizeWords(body.name) : body.name,
+      name,
       serial_number: body.serial_number || undefined,
       category: body.category || undefined,
       notes: body.notes || undefined,
@@ -38,6 +54,7 @@ export async function POST(request: Request) {
       weight_kg: weightKg,
       owner: normalizeOwner(body.owner),
       firmware_version: body.firmware_version || undefined,
+      unit_number: unitNumber.value,
     })
 
     if (kit) {

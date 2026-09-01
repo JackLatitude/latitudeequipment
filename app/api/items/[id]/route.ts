@@ -1,10 +1,11 @@
 import { createClient } from '@/lib/supabase/server'
-import { updateItem, getItem } from '@/lib/db/items'
+import { updateItem, getItem, findUnitNumberClash } from '@/lib/db/items'
 import { getKit } from '@/lib/db/kits'
 import { assignItem } from '@/lib/db/assignments'
 import { NextResponse } from 'next/server'
-import { serverError, readJson, optionalNumber } from '@/lib/api/route-helpers'
+import { serverError, readJson, optionalNumber, parseUnitNumber } from '@/lib/api/route-helpers'
 import { normalizeOwner } from '@/lib/constants'
+import { itemDisplayName } from '@/lib/format'
 
 export async function PATCH(
   request: Request,
@@ -42,6 +43,32 @@ export async function PATCH(
     if (value === null || weightKg === null) {
       return NextResponse.json({ message: 'Value and weight must be numbers' }, { status: 400 })
     }
+    const unitNumber = parseUnitNumber(body.unit_number)
+    if (!unitNumber.ok) return NextResponse.json({ message: unitNumber.message }, { status: 400 })
+
+    // Blank means "leave it as it is" on edit, not "re-assign automatically" —
+    // the number may be written on the unit itself, so an empty box in a form
+    // submitted for some unrelated change must never silently move it.
+    let unitNumberUpdate: { unit_number?: number } = {}
+    if (unitNumber.value !== undefined) {
+      const existing = await getItem(id)
+      if (!existing) return NextResponse.json({ message: 'Item not found' }, { status: 404 })
+      if (unitNumber.value !== existing.unit_number) {
+        const clash = await findUnitNumberClash(
+          typeof body.name === 'string' && body.name ? body.name : existing.name,
+          unitNumber.value,
+          [id, ...(existing.paired_item_id ? [existing.paired_item_id] : [])]
+        )
+        if (clash) {
+          return NextResponse.json(
+            { message: `${itemDisplayName(clash)} already uses that number` },
+            { status: 409 }
+          )
+        }
+        unitNumberUpdate = { unit_number: unitNumber.value }
+      }
+    }
+
     const item = await updateItem(id, {
       name: body.name,
       serial_number: body.serial_number || undefined,
@@ -52,6 +79,7 @@ export async function PATCH(
       weight_kg: weightKg,
       ...(body.owner !== undefined ? { owner: normalizeOwner(body.owner) } : {}),
       firmware_version: body.firmware_version || undefined,
+      ...unitNumberUpdate,
     })
     return NextResponse.json(item)
   } catch (e: unknown) {

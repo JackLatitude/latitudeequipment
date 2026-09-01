@@ -30,6 +30,7 @@ export async function getItems(filters?: ItemFilters): Promise<Item[]> {
     .select('*, current_holder:profiles(*), kit:kits(*)')
     .is('deleted_at', null)
     .order('name')
+    .order('unit_number', { nullsFirst: false })
 
   if (filters?.search) {
     // Strip PostgREST filter-DSL specials so user input can't inject clauses.
@@ -79,6 +80,31 @@ export async function getUnpairedItemsByName(name: string, excludeId: string): P
   return data as Item[]
 }
 
+// The live unit already carrying this number within a model group, if any.
+// Used to reject a duplicate before it reaches the database — there's no
+// unique index, because pair_items() legitimately gives two rows one number,
+// so the item's own pair partner never counts as a clash.
+export async function findUnitNumberClash(
+  name: string,
+  unitNumber: number,
+  excludeIds: string[] = []
+): Promise<Item | null> {
+  const supabase = await createClient()
+  const clean = name.trim().replace(/[,()."\\]/g, ' ').trim()
+  if (!clean) return null
+  let query = supabase
+    .from('items')
+    .select('*, current_holder:profiles(*), kit:kits(*)')
+    .ilike('name', clean)
+    .eq('unit_number', unitNumber)
+    .is('deleted_at', null)
+    .limit(1)
+  for (const id of excludeIds) query = query.neq('id', id)
+  const { data, error } = await query
+  if (error) throw new Error(error.message)
+  return (data?.[0] as Item) ?? null
+}
+
 // Links two items as a pair (same name required) and gives them a shared
 // identification number — see migration 0009 for the atomic RPC.
 export async function pairItems(itemAId: string, itemBId: string): Promise<void> {
@@ -101,6 +127,7 @@ export async function getLooseItems(): Promise<Item[]> {
     .is('deleted_at', null)
     .is('kit_id', null)
     .order('name')
+    .order('unit_number', { nullsFirst: false })
   if (error) throw new Error(error.message)
   return data as Item[]
 }
@@ -169,6 +196,7 @@ export async function getItemsByIds(ids: string[]): Promise<Item[]> {
     .in('id', ids)
     .is('deleted_at', null)
     .order('name')
+    .order('unit_number', { nullsFirst: false })
   if (error) throw new Error(error.message)
   return data as Item[]
 }
