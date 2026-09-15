@@ -1,4 +1,4 @@
-import { getHires, checkoutHire, checkinHire, getActiveHireItemsByItemIds } from '@/lib/db/hires'
+import { getHires, checkoutHire, checkinHire, reopenHire, getActiveHireItemsByItemIds } from '@/lib/db/hires'
 
 const mockFrom = jest.fn()
 const mockRpc = jest.fn()
@@ -80,5 +80,20 @@ describe('getActiveHireItemsByItemIds', () => {
     expect(isMock).toHaveBeenCalledWith('checked_in_at', null)
     expect(eqMock).toHaveBeenCalledWith('hire.status', 'active')
     expect(result).toEqual(fakeData)
+  })
+})
+
+describe('reopenHire', () => {
+  beforeEach(() => jest.clearAllMocks())
+
+  it('runs the atomic reopen_hire transaction', async () => {
+    mockRpc.mockResolvedValue({ error: null })
+    await reopenHire('h1')
+    expect(mockRpc).toHaveBeenCalledWith('reopen_hire', { p_hire_id: 'h1' })
+  })
+
+  it('throws when the transaction fails', async () => {
+    mockRpc.mockResolvedValue({ error: { message: 'boom' } })
+    await expect(reopenHire('h1')).rejects.toThrow('boom')
   })
 })

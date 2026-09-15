@@ -46,10 +46,17 @@ export async function GET(request: Request, { params }: Ctx) {
 
   try {
     const pdf = await generateHirePdf(data)
-    return new Response(new Uint8Array(pdf), {
+    const body = new Uint8Array(pdf)
+    // `inline`, not `attachment`. The app is installed standalone from the iOS
+    // home screen, and standalone web apps have no download manager — an
+    // attachment response there is silently discarded and nothing happens.
+    // Inline renders in the browser's own PDF viewer, which offers save/share
+    // on mobile and desktop alike. The filename still applies when saved.
+    return new Response(body, {
       headers: {
         'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${hire.ref}-packing-slip.pdf"`,
+        'Content-Disposition': `inline; filename="${hire.ref}-packing-slip.pdf"`,
+        'Content-Length': String(body.byteLength),
       },
     })
   } catch (e: unknown) {
