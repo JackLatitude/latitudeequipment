@@ -57,6 +57,7 @@ export function EditItemForm({ item, kits }: Props) {
         weight_kg: raw.weight_kg,
         owner: raw.owner,
         firmware_version: raw.firmware_version,
+        unit_number: raw.unit_number,
       }),
     })
 
@@ -75,6 +76,23 @@ export function EditItemForm({ item, kits }: Props) {
     <form onSubmit={handleSubmit} className="space-y-4">
       <Field label="Name" required>
         <input name="name" required defaultValue={item.name} className={inputClass} />
+      </Field>
+      <Field label="Unit number">
+        <input
+          name="unit_number"
+          type="number"
+          min="1"
+          step="1"
+          defaultValue={item.unit_number ?? ''}
+          placeholder="Auto"
+          className={inputClass}
+          disabled={item.paired_item_id != null}
+        />
+        <p className="text-xs text-brand-mid-grey mt-1.5">
+          {item.paired_item_id != null
+            ? 'Paired units share one number. Unpair them to change it.'
+            : 'Shown after the name, as “' + item.name + ' #2”. Must be free within this model.'}
+        </p>
       </Field>
       <Field label="Serial number">
         <SerialInput name="serial_number" value={serial} onChange={setSerial} inputClass={inputClass} />

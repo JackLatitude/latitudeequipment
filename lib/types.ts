@@ -75,6 +75,7 @@ export type CreateItemData = {
   weight_kg?: number
   owner?: string
   firmware_version?: string
+  unit_number?: number | null
 }
 
 export type CreateKitData = {

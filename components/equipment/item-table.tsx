@@ -41,8 +41,8 @@ function SortIcon({ dir }: { dir: SortDir }) {
   )
 }
 
-type SortField = 'name' | 'serial_number' | 'kit' | 'holder' | 'created_at'
-type SortDir = 'asc' | 'desc'
+export type SortField = 'name' | 'serial_number' | 'kit' | 'holder' | 'created_at'
+export type SortDir = 'asc' | 'desc'
 
 const SORT_FIELDS: { value: SortField; label: string }[] = [
   { value: 'name', label: 'Name' },
@@ -62,16 +62,35 @@ function sortKey(item: Item, field: SortField): string | null {
   }
 }
 
-function sortItems(items: Item[], field: SortField, dir: SortDir): Item[] {
+// Tiebreak for rows the chosen field can't separate — most often several
+// units of the same model, which would otherwise land in whatever order the
+// database happened to return. Falls back to name, then unit number compared
+// numerically, so #2 sorts before #10 rather than after it.
+function tiebreak(a: Item, b: Item, sign: number): number {
+  const byName = a.name.localeCompare(b.name)
+  if (byName !== 0) return byName * sign
+  const na = a.unit_number
+  const nb = b.unit_number
+  // Unnumbered units sort last either way, matching the rule for the primary key.
+  if (na == null && nb == null) return 0
+  if (na == null) return 1
+  if (nb == null) return -1
+  return (na - nb) * sign
+}
+
+export function sortItems(items: Item[], field: SortField, dir: SortDir): Item[] {
   const sign = dir === 'asc' ? 1 : -1
   return [...items].sort((a, b) => {
     const ka = sortKey(a, field)
     const kb = sortKey(b, field)
     // Nulls (no serial/kit/holder) always sort last, regardless of direction.
-    if (ka === null && kb === null) return 0
-    if (ka === null) return 1
-    if (kb === null) return -1
-    return ka.localeCompare(kb) * sign
+    if (ka === null && kb !== null) return 1
+    if (kb === null && ka !== null) return -1
+    if (ka !== null && kb !== null) {
+      const primary = ka.localeCompare(kb) * sign
+      if (primary !== 0) return primary
+    }
+    return tiebreak(a, b, sign)
   })
 }
 
