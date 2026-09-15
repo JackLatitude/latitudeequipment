@@ -1,4 +1,4 @@
-import { assignItem, assignKit, getItemHistory } from '@/lib/db/assignments'
+import { assignItem } from '@/lib/db/assignments'
 
 const mockFrom = jest.fn()
 const mockSupabase = { from: mockFrom }
