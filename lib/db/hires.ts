@@ -120,6 +120,14 @@ export async function checkinHire(hireId: string): Promise<void> {
   if (error) throw new Error(error.message)
 }
 
+export async function reopenHire(hireId: string): Promise<void> {
+  const supabase = await createClient()
+  // Single transaction: clears the item checkout/check-in stamps and drops the
+  // hire back to draft together (migration 0014).
+  const { error } = await supabase.rpc('reopen_hire', { p_hire_id: hireId })
+  if (error) throw new Error(error.message)
+}
+
 export async function getActiveHireItemsByItemIds(itemIds: string[]): Promise<HireItem[]> {
   if (itemIds.length === 0) return []
   const supabase = await createClient()

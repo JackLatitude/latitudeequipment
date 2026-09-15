@@ -32,8 +32,18 @@ export function HireActions({ hireId, status, itemCount }: Props) {
   return (
     <div>
       <div className="flex flex-wrap gap-3">
-        <a href={`/api/hires/${hireId}/pdf`} className={secondaryBtn}>
-          {status === 'draft' ? 'Preview PDF' : 'Download PDF'}
+        {/* Opens in a new tab and is served inline rather than as an
+            attachment: the app runs standalone from the iOS home screen, and a
+            standalone web app has no download manager, so an attachment
+            navigation there silently does nothing. Inline hands it to the
+            browser's PDF viewer, which offers save/share on every platform. */}
+        <a
+          href={`/api/hires/${hireId}/pdf`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={secondaryBtn}
+        >
+          {status === 'draft' ? 'Preview PDF' : 'Open PDF'}
         </a>
         {status === 'draft' && (
           <button
@@ -52,6 +62,15 @@ export function HireActions({ hireId, status, itemCount }: Props) {
             className={primaryBtn}
           >
             {loading === 'return' ? 'Returning…' : 'Return all'}
+          </button>
+        )}
+        {status === 'returned' && (
+          <button
+            onClick={() => post(`/api/hires/${hireId}/reopen`, 'reopen')}
+            disabled={loading !== null}
+            className={secondaryBtn}
+          >
+            {loading === 'reopen' ? 'Reopening…' : 'Reopen as draft'}
           </button>
         )}
       </div>
