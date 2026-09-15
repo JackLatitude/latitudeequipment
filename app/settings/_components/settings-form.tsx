@@ -95,7 +95,7 @@ export function SettingsForm({ profile, email }: Props) {
         setNewPassword('')
         setConfirmPassword('')
       }
-    } catch (err) {
+    } catch {
       setPasswordMsg('Something went wrong.')
     }
 

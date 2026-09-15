@@ -1,7 +1,5 @@
 import { getKits, duplicateKit } from '@/lib/db/kits'
 
-const mockInsert = jest.fn()
-const mockSelect = jest.fn()
 const mockFrom = jest.fn()
 const mockSupabase = { from: mockFrom }
 

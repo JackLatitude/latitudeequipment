@@ -118,7 +118,6 @@ export default function SerialScanner({ onDetected, onClose }: Props) {
     <div className="fixed inset-0 z-50 bg-brand-black flex flex-col" role="dialog" aria-label="Scan serial number">
       {/* Camera feed */}
       <div className="relative flex-1 overflow-hidden">
-        {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
         <video ref={videoRef} playsInline muted className="absolute inset-0 w-full h-full object-cover" />
 
         {error ? (

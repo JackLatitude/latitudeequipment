@@ -80,11 +80,10 @@ export function NewItemForm({ templates, kits, initialSerial, initialTemplate, i
   // match (duplicate) or a same-prefix model to suggest.
   useEffect(() => {
     const s = serial.trim()
-    if (s.length < 4) {
-      setSuggestion(null)
-      setDuplicateId(null)
-      return
-    }
+    // Too short to look up. The stale verdict is filtered out at render
+    // (serialReady below) rather than cleared here, which would setState
+    // synchronously in the effect body and cost an extra render pass.
+    if (s.length < 4) return
     const ctrl = new AbortController()
     const timer = setTimeout(async () => {
       try {
@@ -108,6 +107,12 @@ export function NewItemForm({ templates, kits, initialSerial, initialTemplate, i
       ctrl.abort()
     }
   }, [serial, template, dismissedSerial])
+
+  // A serial too short to look up has no verdict yet, so never show the one
+  // left over from the previous serial.
+  const serialReady = serial.trim().length >= 4
+  const shownSuggestion = serialReady ? suggestion : null
+  const shownDuplicateId = serialReady ? duplicateId : null
 
   const q = search.trim().toLowerCase()
   const matches = q ? templates.filter((t) => t.name.toLowerCase().includes(q)).slice(0, 8) : []
@@ -223,15 +228,15 @@ export function NewItemForm({ templates, kits, initialSerial, initialTemplate, i
 
       <Field label="Serial number">
         <SerialInput name="serial_number" value={serial} onChange={setSerial} inputClass={inputClass} />
-        {suggestion && (
+        {shownSuggestion && (
           <div className="mt-2 border border-brand-red/40 bg-brand-red/5 rounded px-3 py-2">
             <p className="text-sm text-white">
-              Looks like a <span className="font-medium">{itemDisplayName(suggestion)}</span>. Use its details?
+              Looks like a <span className="font-medium">{itemDisplayName(shownSuggestion)}</span>. Use its details?
             </p>
             <div className="flex gap-4 mt-2">
               <button
                 type="button"
-                onClick={() => applyTemplate(suggestion)}
+                onClick={() => applyTemplate(shownSuggestion)}
                 className="text-sm font-medium text-brand-red hover:opacity-80"
               >
                 Yes, use them
@@ -249,10 +254,10 @@ export function NewItemForm({ templates, kits, initialSerial, initialTemplate, i
             </div>
           </div>
         )}
-        {duplicateId && (
+        {shownDuplicateId && (
           <p className="mt-2 text-xs text-brand-mid-grey">
             An item with this serial is already in the database.{' '}
-            <Link href={`/equipment/${duplicateId}`} className="text-white hover:underline">
+            <Link href={`/equipment/${shownDuplicateId}`} className="text-white hover:underline">
               View it →
             </Link>
           </p>

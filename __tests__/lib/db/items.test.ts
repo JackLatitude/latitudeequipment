@@ -1,4 +1,4 @@
-import { getItems, getItem, createItem, deleteItem } from '@/lib/db/items'
+import { getItems, deleteItem } from '@/lib/db/items'
 
 const mockSelect = jest.fn()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
