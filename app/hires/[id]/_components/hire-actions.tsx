@@ -45,6 +45,16 @@ export function HireActions({ hireId, status, itemCount }: Props) {
         >
           {status === 'draft' ? 'Preview PDF' : 'Open PDF'}
         </a>
+        {itemCount > 0 && (
+          <a
+            href={`/api/hires/${hireId}/carnet`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={secondaryBtn}
+          >
+            Export carnet
+          </a>
+        )}
         {status === 'draft' && (
           <button
             onClick={() => post(`/api/hires/${hireId}/checkout`, 'checkout')}

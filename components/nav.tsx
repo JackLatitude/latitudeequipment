@@ -44,7 +44,6 @@ export function Nav({ displayName }: Props) {
         <Link href="/firmware" className={linkClass('/firmware')}>Firmware</Link>
         <Link href="/kits" className={linkClass('/kits')}>Kits</Link>
         <Link href="/hires" className={linkClass('/hires')}>Hires</Link>
-        <Link href="/carnet" className={linkClass('/carnet')}>Carnet</Link>
         <Link href="/settings" className={linkClass('/settings')}>Settings</Link>
       </div>
       <div className="flex items-center gap-4">
