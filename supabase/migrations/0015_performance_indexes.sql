@@ -21,11 +21,13 @@ create index if not exists items_paired_item_id_idx
 -- Equipment search is `name ILIKE '%q%' OR serial_number ILIKE '%q%'`, and the
 -- scanner does case-insensitive serial lookups. A btree can't serve a leading
 -- wildcard; trigram GIN indexes can serve both.
+-- Schema-qualified: the migration runner's search_path doesn't include
+-- `extensions`, so a bare gin_trgm_ops isn't found.
 create extension if not exists pg_trgm with schema extensions;
 create index if not exists items_name_trgm_idx
-  on items using gin (name gin_trgm_ops) where deleted_at is null;
+  on items using gin (name extensions.gin_trgm_ops) where deleted_at is null;
 create index if not exists items_serial_trgm_idx
-  on items using gin (serial_number gin_trgm_ops) where deleted_at is null;
+  on items using gin (serial_number extensions.gin_trgm_ops) where deleted_at is null;
 
 -- Item detail page: history for one item, newest first.
 create index if not exists assignment_history_item_assigned_at_idx
