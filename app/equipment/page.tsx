@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { getItems } from '@/lib/db/items'
 import { getProfiles } from '@/lib/db/users'
-import { getActiveHireItemsByItemIds } from '@/lib/db/hires'
+import { getOnHireItemIds } from '@/lib/db/hires'
 import { ItemTableWrapper } from './_components/item-table-wrapper'
 import { ScanToFind } from '@/components/equipment/scan-to-find'
 import { buttonClasses } from '@/components/ui/button'
@@ -13,12 +13,11 @@ type Props = {
 export default async function EquipmentPage({ searchParams }: Props) {
   const { search, holder } = await searchParams
 
-  const [items, profiles] = await Promise.all([
+  const [items, profiles, onHireItemIds] = await Promise.all([
     getItems({ search, holderId: holder }),
     getProfiles(),
+    getOnHireItemIds(),
   ])
-  const activeHireItems = await getActiveHireItemsByItemIds(items.map((i) => i.id))
-  const onHireItemIds = activeHireItems.map((hi) => hi.item_id)
 
   return (
     <div>

@@ -102,3 +102,12 @@ export async function duplicateKit(kitId: string, duplicatedById: string): Promi
 
   return newKit as Kit
 }
+
+export async function countKits(): Promise<number> {
+  const supabase = await createClient()
+  const { count, error } = await supabase
+    .from('kits')
+    .select('id', { count: 'exact', head: true })
+  if (error) throw new Error(error.message)
+  return count ?? 0
+}

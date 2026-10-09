@@ -59,3 +59,12 @@ export async function deleteClient(id: string): Promise<void> {
   if (error?.code === '23503') throw new Error('CLIENT_HAS_HIRES')
   if (error) throw new Error(error.message)
 }
+
+export async function countClients(): Promise<number> {
+  const supabase = await createSupabase()
+  const { count, error } = await supabase
+    .from('clients')
+    .select('id', { count: 'exact', head: true })
+  if (error) throw new Error(error.message)
+  return count ?? 0
+}

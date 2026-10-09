@@ -1,8 +1,8 @@
 import Link from 'next/link'
-import { getItems } from '@/lib/db/items'
-import { getKits } from '@/lib/db/kits'
+import { countItems } from '@/lib/db/items'
+import { countKits } from '@/lib/db/kits'
 import { getHires } from '@/lib/db/hires'
-import { getClients } from '@/lib/db/clients'
+import { countClients } from '@/lib/db/clients'
 import { getOutdatedFirmwareCount } from '@/lib/db/firmware'
 import { StatCard } from './_components/stat-card'
 import { HireCard } from '../hires/_components/hire-card'
@@ -12,11 +12,13 @@ import { buttonClasses } from '@/components/ui/button'
 const labelClass = 'text-xs font-extralight uppercase tracking-wider text-brand-mid-grey'
 
 export default async function DashboardPage() {
-  const [items, kits, hires, clients, outdatedFirmwareCount] = await Promise.all([
-    getItems(),
-    getKits(),
-    getHires(),
-    getClients(),
+  // Counts come back as head-only count queries, and only the hires the page
+  // actually shows (active + draft) are fetched — returned hires grow forever.
+  const [itemCount, kitCount, hires, clientCount, outdatedFirmwareCount] = await Promise.all([
+    countItems(),
+    countKits(),
+    getHires(['active', 'draft']),
+    countClients(),
     getOutdatedFirmwareCount(),
   ])
 
@@ -24,7 +26,6 @@ export default async function DashboardPage() {
   const draftHires = hires.filter((h) => h.status === 'draft')
   const activeCount = activeHires.length
   const draftCount = draftHires.length
-  const clientCount = clients.length
 
   // Items out right now = hire_items on active hires not yet checked back in.
   const onHire = activeHires.reduce(
@@ -93,7 +94,7 @@ export default async function DashboardPage() {
 
       {/* Stat cards */}
       <section className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-10">
-        <StatCard label="Equipment" value={items.length} sub={`${onHire} on hire`} href="/equipment" />
+        <StatCard label="Equipment" value={itemCount} sub={`${onHire} on hire`} href="/equipment" />
         <StatCard
           label="On hire now"
           value={onHire}
@@ -109,7 +110,7 @@ export default async function DashboardPage() {
         />
         <StatCard
           label="Kits"
-          value={kits.length}
+          value={kitCount}
           sub={`${clientCount} ${clientCount === 1 ? 'client' : 'clients'}`}
           href="/kits"
         />

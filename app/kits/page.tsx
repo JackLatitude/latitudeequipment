@@ -1,19 +1,14 @@
 import Link from 'next/link'
 import { getKits } from '@/lib/db/kits'
-import { getItems } from '@/lib/db/items'
+import { getKitItemCounts } from '@/lib/db/items'
 import { KitCard } from '@/components/kits/kit-card'
 import { buttonClasses } from '@/components/ui/button'
 
 export default async function KitsPage() {
-  const [kits, allItems] = await Promise.all([
+  const [kits, itemCountByKit] = await Promise.all([
     getKits(),
-    getItems(),
+    getKitItemCounts(),
   ])
-
-  const itemCountByKit = allItems.reduce<Record<string, number>>((acc, item) => {
-    if (item.kit_id) acc[item.kit_id] = (acc[item.kit_id] ?? 0) + 1
-    return acc
-  }, {})
 
   return (
     <div>

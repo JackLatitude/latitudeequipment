@@ -24,6 +24,12 @@ export default function SerialScanner({ onDetected, onClose }: Props) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const doneRef = useRef(false)
+  // Latest callback in a ref, so a parent re-render passing a new function
+  // doesn't tear down and restart the camera stream.
+  const onDetectedRef = useRef(onDetected)
+  useEffect(() => {
+    onDetectedRef.current = onDetected
+  }, [onDetected])
   const [error, setError] = useState<string | null>(null)
   const [torchOn, setTorchOn] = useState(false)
   const [torchAvailable, setTorchAvailable] = useState(false)
@@ -63,6 +69,9 @@ export default function SerialScanner({ onDetected, onClose }: Props) {
       if (!video) return
       video.srcObject = stream
       await video.play().catch(() => undefined)
+      // Unmounted while play() was pending — cleanup has already run, so an
+      // interval started now would never be cleared.
+      if (cancelled) return
 
       const [track] = stream.getVideoTracks()
       // Torch support is a track capability, not universal
@@ -82,7 +91,7 @@ export default function SerialScanner({ onDetected, onClose }: Props) {
           if (value && !doneRef.current) {
             doneRef.current = true
             navigator.vibrate?.(50)
-            onDetected(value)
+            onDetectedRef.current(value)
           }
         } catch {
           // Transient decode errors (e.g. frame not ready) — keep scanning
@@ -100,7 +109,8 @@ export default function SerialScanner({ onDetected, onClose }: Props) {
       streamRef.current?.getTracks().forEach((t) => t.stop())
       streamRef.current = null
     }
-  }, [onDetected])
+    // Run once per mount: onDetected is read through onDetectedRef.
+  }, [])
 
   async function toggleTorch() {
     const track = streamRef.current?.getVideoTracks()[0]

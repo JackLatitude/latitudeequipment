@@ -1,4 +1,4 @@
-import { capitalizeWords } from '@/lib/text'
+import { capitalizeWords, isUuid } from '@/lib/text'
 
 describe('capitalizeWords', () => {
   it('capitalises ordinary words', () => {
@@ -31,5 +31,18 @@ describe('capitalizeWords', () => {
 
   it('trims and collapses surrounding whitespace', () => {
     expect(capitalizeWords('  sony   fx9  ')).toBe('Sony FX9')
+  })
+})
+
+describe('isUuid', () => {
+  it('accepts a well-formed uuid in either case', () => {
+    expect(isUuid('3f2b8c1e-9a4d-4e7b-8c21-0d5f6a7b8c9d')).toBe(true)
+    expect(isUuid('3F2B8C1E-9A4D-4E7B-8C21-0D5F6A7B8C9D')).toBe(true)
+  })
+
+  it('rejects anything else', () => {
+    expect(isUuid('')).toBe(false)
+    expect(isUuid('new')).toBe(false)
+    expect(isUuid('3f2b8c1e-9a4d-4e7b-8c21-0d5f6a7b8c9')).toBe(false)
   })
 })

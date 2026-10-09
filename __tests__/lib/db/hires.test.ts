@@ -1,4 +1,4 @@
-import { getHires, checkoutHire, checkinHire, reopenHire, getActiveHireItemsByItemIds } from '@/lib/db/hires'
+import { getHires, checkoutHire, checkinHire, reopenHire, getActiveHireItemsByItemIds, getOnHireItemIds } from '@/lib/db/hires'
 
 const mockFrom = jest.fn()
 const mockRpc = jest.fn()
@@ -95,5 +95,52 @@ describe('reopenHire', () => {
   it('throws when the transaction fails', async () => {
     mockRpc.mockResolvedValue({ error: { message: 'boom' } })
     await expect(reopenHire('h1')).rejects.toThrow('boom')
+  })
+})
+
+describe('getHires with a status filter', () => {
+  beforeEach(() => jest.clearAllMocks())
+
+  it('only fetches the requested statuses', async () => {
+    const inFn = jest.fn().mockResolvedValue({ data: [], error: null })
+    mockFrom.mockReturnValue({
+      select: jest.fn().mockReturnValue({
+        order: jest.fn().mockReturnValue({ in: inFn }),
+      }),
+    })
+    await getHires(['active', 'draft'])
+    expect(inFn).toHaveBeenCalledWith('status', ['active', 'draft'])
+  })
+})
+
+describe('getOnHireItemIds', () => {
+  beforeEach(() => jest.clearAllMocks())
+
+  it('returns the ids of items out on active hires', async () => {
+    const eq = jest.fn().mockResolvedValue({
+      data: [{ item_id: 'i1' }, { item_id: 'i2' }],
+      error: null,
+    })
+    mockFrom.mockReturnValue({
+      select: jest.fn().mockReturnValue({
+        not: jest.fn().mockReturnValue({ is: jest.fn().mockReturnValue({ eq }) }),
+      }),
+    })
+    expect(await getOnHireItemIds()).toEqual(['i1', 'i2'])
+    expect(mockFrom).toHaveBeenCalledWith('hire_items')
+    expect(eq).toHaveBeenCalledWith('hire.status', 'active')
+  })
+
+  it('throws on a database error', async () => {
+    mockFrom.mockReturnValue({
+      select: jest.fn().mockReturnValue({
+        not: jest.fn().mockReturnValue({
+          is: jest.fn().mockReturnValue({
+            eq: jest.fn().mockResolvedValue({ data: null, error: { message: 'boom' } }),
+          }),
+        }),
+      }),
+    })
+    await expect(getOnHireItemIds()).rejects.toThrow('boom')
   })
 })

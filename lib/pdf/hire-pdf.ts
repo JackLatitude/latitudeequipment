@@ -92,21 +92,34 @@ function wrapText(text: string, font: PDFFont, size: number, maxWidth: number): 
   return out.length ? out : ['']
 }
 
-export async function generateHirePdf(hire: HirePdfData): Promise<Uint8Array> {
-  const doc = await PDFDocument.create()
-  doc.registerFontkit(fontkit)
-
-  const [boldBytes, regBytes, lightBytes, logoBytes] = await Promise.all([
+// The fonts and logo never change at runtime, so read them once per server
+// instance rather than from disk on every PDF. A failed read is not cached.
+let assetsPromise: Promise<Buffer[]> | null = null
+function loadAssets(): Promise<Buffer[]> {
+  assetsPromise ??= Promise.all([
     readFile(path.join(FONTS, 'Metropolis-Bold.ttf')),
     readFile(path.join(FONTS, 'Metropolis-Regular.ttf')),
     readFile(path.join(FONTS, 'Metropolis-ExtraLight.ttf')),
     readFile(path.join(ASSETS, 'logo_white_full_on_black.png')),
-  ])
+  ]).catch((e) => {
+    assetsPromise = null
+    throw e
+  })
+  return assetsPromise
+}
 
-  const bold = await doc.embedFont(boldBytes, { subset: true })
-  const regular = await doc.embedFont(regBytes, { subset: true })
-  const light = await doc.embedFont(lightBytes, { subset: true })
-  const logo = await doc.embedPng(logoBytes)
+export async function generateHirePdf(hire: HirePdfData): Promise<Uint8Array> {
+  const doc = await PDFDocument.create()
+  doc.registerFontkit(fontkit)
+
+  const [boldBytes, regBytes, lightBytes, logoBytes] = await loadAssets()
+
+  const [bold, regular, light, logo] = await Promise.all([
+    doc.embedFont(boldBytes, { subset: true }),
+    doc.embedFont(regBytes, { subset: true }),
+    doc.embedFont(lightBytes, { subset: true }),
+    doc.embedPng(logoBytes),
+  ])
 
   const pages: PDFPage[] = []
 

@@ -1,4 +1,4 @@
-import { getItems, deleteItem } from '@/lib/db/items'
+import { getItems, deleteItem, getKitItemCounts, countItems } from '@/lib/db/items'
 
 const mockSelect = jest.fn()
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -16,7 +16,7 @@ jest.mock('@/lib/supabase/server', () => ({
 function queryResult(result: { data: unknown; error: unknown }): any {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const chain: any = Promise.resolve(result)
-  for (const method of ['is', 'order', 'in', 'eq', 'neq', 'ilike', 'limit', 'or']) {
+  for (const method of ['is', 'not', 'order', 'in', 'eq', 'neq', 'ilike', 'limit', 'or']) {
     chain[method] = jest.fn(() => chain)
   }
   return chain
@@ -126,5 +126,27 @@ describe('findUnitNumberClash', () => {
   it('ignores a blank name rather than querying for every item', async () => {
     const { findUnitNumberClash } = await import('@/lib/db/items')
     expect(await findUnitNumberClash('   ', 3)).toBeNull()
+  })
+})
+
+describe('getKitItemCounts', () => {
+  beforeEach(() => jest.clearAllMocks())
+
+  it('counts live items per kit from kit ids alone', async () => {
+    mockSelect.mockReturnValue(
+      queryResult({ data: [{ kit_id: 'k1' }, { kit_id: 'k2' }, { kit_id: 'k1' }], error: null })
+    )
+    expect(await getKitItemCounts()).toEqual({ k1: 2, k2: 1 })
+    expect(mockSelect).toHaveBeenCalledWith('kit_id')
+  })
+})
+
+describe('countItems', () => {
+  beforeEach(() => jest.clearAllMocks())
+
+  it('uses a head-only count query', async () => {
+    mockSelect.mockReturnValue(queryResult({ data: null, count: 42, error: null } as never))
+    expect(await countItems()).toBe(42)
+    expect(mockSelect).toHaveBeenCalledWith('id', { count: 'exact', head: true })
   })
 })

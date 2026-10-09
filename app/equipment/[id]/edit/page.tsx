@@ -2,15 +2,14 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getItem } from '@/lib/db/items'
 import { getKits } from '@/lib/db/kits'
-import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth'
 import { EditItemForm } from './_components/edit-item-form'
 
 type Props = { params: Promise<{ id: string }> }
 
 export default async function EditItemPage({ params }: Props) {
   const { id } = await params
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
   if (!user) return notFound()
 
   const [item, kits] = await Promise.all([getItem(id), getKits()])

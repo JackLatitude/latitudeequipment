@@ -1,14 +1,11 @@
-import { createClient } from '@/lib/supabase/server'
-import { getProfile } from '@/lib/db/users'
+import { getCurrentUser, getCurrentProfile } from '@/lib/auth'
 import { notFound } from 'next/navigation'
 import { SettingsForm } from './_components/settings-form'
 
 export default async function SettingsPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const [user, profile] = await Promise.all([getCurrentUser(), getCurrentProfile()])
   if (!user) return notFound()
 
-  const profile = await getProfile(user.id)
   if (!profile) return notFound()
 
   return (

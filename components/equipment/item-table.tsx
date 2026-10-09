@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import type { Item, Profile } from '@/lib/types'
 import { ITEM_CATEGORIES, ITEM_OWNERS } from '@/lib/constants'
 import { itemDisplayName } from '@/lib/format'
@@ -52,6 +52,11 @@ const SORT_FIELDS: { value: SortField; label: string }[] = [
   { value: 'created_at', label: 'Date added' },
 ]
 
+// One shared collator: same ordering as String#localeCompare with no options,
+// without re-resolving the locale on every comparison inside a sort.
+const collator = new Intl.Collator()
+const compare = collator.compare
+
 function sortKey(item: Item, field: SortField): string | null {
   switch (field) {
     case 'name': return item.name
@@ -67,7 +72,7 @@ function sortKey(item: Item, field: SortField): string | null {
 // database happened to return. Falls back to name, then unit number compared
 // numerically, so #2 sorts before #10 rather than after it.
 function tiebreak(a: Item, b: Item, sign: number): number {
-  const byName = a.name.localeCompare(b.name)
+  const byName = compare(a.name, b.name)
   if (byName !== 0) return byName * sign
   const na = a.unit_number
   const nb = b.unit_number
@@ -87,7 +92,7 @@ export function sortItems(items: Item[], field: SortField, dir: SortDir): Item[]
     if (ka === null && kb !== null) return 1
     if (kb === null && ka !== null) return -1
     if (ka !== null && kb !== null) {
-      const primary = ka.localeCompare(kb) * sign
+      const primary = compare(ka, kb) * sign
       if (primary !== 0) return primary
     }
     return tiebreak(a, b, sign)
@@ -113,17 +118,25 @@ function groupByCategory(items: Item[]): [string, Item[]][] {
     const rankA = CATEGORY_RANK.get(a) ?? Infinity
     const rankB = CATEGORY_RANK.get(b) ?? Infinity
     if (rankA !== rankB) return rankA - rankB
-    return a.localeCompare(b)
+    return compare(a, b)
   })
 }
 
 export function ItemTable({ items, profiles, onHireItemIds, search, holderId, onSearchChange, onHolderChange }: Props) {
   const inputClass = 'border border-brand-rule-grey rounded px-3 py-2 text-base lg:text-sm bg-brand-input text-white focus:outline-none focus:ring-2 focus:ring-brand-red'
 
-  const onHire = new Set(onHireItemIds)
+  const onHire = useMemo(() => new Set(onHireItemIds), [onHireItemIds])
   const [sortField, setSortField] = useState<SortField>('name')
   const [sortDir, setSortDir] = useState<SortDir>('asc')
-  const groups = groupByCategory(items)
+  // Group + sort once per data/sort change, not on every keystroke or
+  // section toggle.
+  const groups = useMemo(
+    () =>
+      groupByCategory(items).map(
+        ([category, groupItems]) => [category, sortItems(groupItems, sortField, sortDir)] as const
+      ),
+    [items, sortField, sortDir]
+  )
 
   // Sections start collapsed, but a search/holder filter expands them — otherwise
   // filtering would leave the page looking empty, with only headers showing.
@@ -188,8 +201,7 @@ export function ItemTable({ items, profiles, onHireItemIds, search, holderId, on
         <p className="text-sm text-brand-mid-grey">No equipment matches your filters. Try clearing the search or selecting a different holder.</p>
       ) : (
         <div className="space-y-4">
-          {groups.map(([category, rawGroupItems]) => {
-            const groupItems = sortItems(rawGroupItems, sortField, sortDir)
+          {groups.map(([category, groupItems]) => {
             const isCollapsed = overrides[category] ?? defaultCollapsed
             return (
               <div key={category}>

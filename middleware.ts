@@ -25,9 +25,12 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // getClaims() verifies the JWT locally against the project's published
+  // signing keys (falling back to an Auth server call for legacy symmetric
+  // keys) and still refreshes an expired session. getUser() made a network
+  // round trip to Supabase Auth on every request, prefetches included.
+  const { data } = await supabase.auth.getClaims()
+  const user = data?.claims
 
   const isAuthRoute =
     request.nextUrl.pathname.startsWith('/login') ||

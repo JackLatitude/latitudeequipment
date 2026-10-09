@@ -4,32 +4,34 @@ import { getItem, deleteItem, getUnpairedItemsByName, pairItems, unpairItem } fr
 import { getProfiles } from '@/lib/db/users'
 import { getItemHistory, assignItem } from '@/lib/db/assignments'
 import { getActiveHireItemsByItemIds } from '@/lib/db/hires'
-import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth'
 import { AssignControl } from '@/components/equipment/assign-control'
 import { PairControl } from '@/components/equipment/pair-control'
 import { revalidatePath } from 'next/cache'
 import { DeleteItemButton } from './_components/delete-button'
 import { itemDisplayName } from '@/lib/format'
+import { isUuid } from '@/lib/text'
 import { isPairableItemName } from '@/lib/constants'
 
 type Props = { params: Promise<{ id: string }> }
 
 export default async function ItemDetailPage({ params }: Props) {
   const { id } = await params
+  // The queries below run in parallel with the existence check, and Postgres
+  // rejects a malformed uuid outright — 404 it here rather than 500 later.
+  if (!isUuid(id)) return notFound()
 
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
   if (!user) return notFound()
 
-  const [item, profiles, history] = await Promise.all([
+  const [item, profiles, history, [activeHireItem]] = await Promise.all([
     getItem(id),
     getProfiles(),
     getItemHistory(id),
+    getActiveHireItemsByItemIds([id]),
   ])
 
   if (!item) return notFound()
-
-  const [activeHireItem] = await getActiveHireItemsByItemIds([item.id])
 
   const isPairable = isPairableItemName(item.name)
   const pairCandidates = isPairable && !item.paired_item_id

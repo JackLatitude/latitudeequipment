@@ -2,8 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { Nav } from '@/components/nav'
 import { MobileNav } from '@/components/mobile-nav'
-import { createClient } from '@/lib/supabase/server'
-import { getProfile } from '@/lib/db/users'
+import { getCurrentProfile } from '@/lib/auth'
 
 export const metadata: Metadata = {
   title: 'Latitude Equipment',
@@ -27,9 +26,7 @@ export const viewport: Viewport = {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  const profile = user ? await getProfile(user.id) : null
+  const profile = await getCurrentProfile()
 
   return (
     <html lang="en">

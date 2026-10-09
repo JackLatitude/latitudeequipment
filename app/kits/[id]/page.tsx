@@ -2,40 +2,41 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { revalidatePath } from 'next/cache'
 import { getKit } from '@/lib/db/kits'
-import { getItems, getLooseItems } from '@/lib/db/items'
+import { getItemsByKit, getLooseItems } from '@/lib/db/items'
 import { getProfiles } from '@/lib/db/users'
-import { getActiveHireItemsByItemIds } from '@/lib/db/hires'
+import { getActiveHireItemForKit } from '@/lib/db/hires'
 import { assignKit, assignItem, addItemsToKit } from '@/lib/db/assignments'
-import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth'
 import { KitAssignControl } from '@/components/kits/kit-assign-control'
 import { AssignControl } from '@/components/equipment/assign-control'
 import { KitActions } from './_components/kit-actions'
 import { AddItemControl } from './_components/add-item-control'
 import { itemDisplayName } from '@/lib/format'
+import { isUuid } from '@/lib/text'
 
 type Props = { params: Promise<{ id: string }> }
 
 export default async function KitDetailPage({ params }: Props) {
   const { id } = await params
+  // The queries below run in parallel with the existence check, and Postgres
+  // rejects a malformed uuid outright — 404 it here rather than 500 later.
+  if (!isUuid(id)) return notFound()
 
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const user = await getCurrentUser()
   if (!user) return notFound()
-
-  const [kit, allItems, profiles, looseItems] = await Promise.all([
-    getKit(id),
-    getItems(),
-    getProfiles(),
-    getLooseItems(),
-  ])
-
-  if (!kit) return notFound()
-  const kitItems = allItems.filter((item) => item.kit_id === kit.id)
 
   // If any of the kit's items is on an active hire, treat the whole kit as
   // "on hire" — items are added/removed from kits as a unit in this app, so
   // one active hire_item is enough to infer which hire the kit is out on.
-  const [activeHireItem] = await getActiveHireItemsByItemIds(kitItems.map((i) => i.id))
+  const [kit, kitItems, profiles, looseItems, activeHireItem] = await Promise.all([
+    getKit(id),
+    getItemsByKit(id),
+    getProfiles(),
+    getLooseItems(),
+    getActiveHireItemForKit(id),
+  ])
+
+  if (!kit) return notFound()
   const activeHire = activeHireItem?.hire ?? null
 
   async function handleAssignKit(kitId: string, assignedToId: string) {

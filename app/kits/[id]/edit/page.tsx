@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { getKit } from '@/lib/db/kits'
-import { createClient } from '@/lib/supabase/server'
+import { getCurrentUser } from '@/lib/auth'
 import { EditKitForm } from './_components/edit-kit-form'
 
 type Props = { params: Promise<{ id: string }> }
@@ -9,11 +9,8 @@ type Props = { params: Promise<{ id: string }> }
 export default async function EditKitPage({ params }: Props) {
   const { id } = await params
 
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+  const [user, kit] = await Promise.all([getCurrentUser(), getKit(id)])
   if (!user) return notFound()
-
-  const kit = await getKit(id)
   if (!kit) return notFound()
 
   return (

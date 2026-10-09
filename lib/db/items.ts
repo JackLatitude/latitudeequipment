@@ -119,6 +119,43 @@ export async function unpairItem(itemId: string): Promise<void> {
   if (error) throw new Error(error.message)
 }
 
+export async function getItemsByKit(kitId: string): Promise<Item[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('items')
+    .select('*, current_holder:profiles(*), kit:kits(*)')
+    .eq('kit_id', kitId)
+    .is('deleted_at', null)
+    .order('name')
+    .order('unit_number', { nullsFirst: false })
+  if (error) throw new Error(error.message)
+  return data as Item[]
+}
+
+// Live item count per kit, without fetching the items themselves.
+export async function getKitItemCounts(): Promise<Record<string, number>> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from('items')
+    .select('kit_id')
+    .not('kit_id', 'is', null)
+    .is('deleted_at', null)
+  if (error) throw new Error(error.message)
+  const counts: Record<string, number> = {}
+  for (const { kit_id } of data ?? []) counts[kit_id] = (counts[kit_id] ?? 0) + 1
+  return counts
+}
+
+export async function countItems(): Promise<number> {
+  const supabase = await createClient()
+  const { count, error } = await supabase
+    .from('items')
+    .select('id', { count: 'exact', head: true })
+    .is('deleted_at', null)
+  if (error) throw new Error(error.message)
+  return count ?? 0
+}
+
 export async function getLooseItems(): Promise<Item[]> {
   const supabase = await createClient()
   const { data, error } = await supabase

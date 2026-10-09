@@ -60,3 +60,10 @@ export function capitalizeWords(input: string): string {
     })
     .join(' ')
 }
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/** True for a well-formed UUID — lets a page 404 a junk id before querying. */
+export function isUuid(v: string): boolean {
+  return UUID_RE.test(v)
+}

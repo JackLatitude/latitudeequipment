@@ -43,14 +43,17 @@ export async function upsertFirmwareTarget(
 
 export async function getFirmwareModels(): Promise<FirmwareModel[]> {
   const supabase = await createClient()
-  const { data, error } = await supabase
-    .from('items')
-    .select('id, name, serial_number, firmware_version')
-    .in('category', [...FIRMWARE_CATEGORIES])
-    .is('deleted_at', null)
-    .order('name')
+  // Independent reads — run them together rather than back to back.
+  const [{ data, error }, targets] = await Promise.all([
+    supabase
+      .from('items')
+      .select('id, name, serial_number, firmware_version')
+      .in('category', [...FIRMWARE_CATEGORIES])
+      .is('deleted_at', null)
+      .order('name'),
+    getFirmwareTargets(),
+  ])
   if (error) throw new Error(error.message)
-  const targets = await getFirmwareTargets()
   return buildFirmwareModels((data ?? []) as FirmwareItemRow[], targets)
 }
 
